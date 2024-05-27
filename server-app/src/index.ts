@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import GroupRouter from './routes/group';
+import UserRouter from './routes/user';
 import { clientErrorHandler, logErrors } from './shared/api';
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.get('/', async (req: Request, res: Response) => {
 });
 
 app.use('/api/groups', GroupRouter);
+app.use('/api/users', UserRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
