@@ -1,4 +1,4 @@
-import Group from '@/models/group';
+import Group from '../models/group';
 
 const GroupService = {
   async search(page: number, limit: number) {

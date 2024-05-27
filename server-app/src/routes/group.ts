@@ -1,7 +1,7 @@
-import Group, { GroupValidator } from '@/models/group';
-import GroupService from '@/services/group';
-import { validationHandler } from '@/shared/api';
 import { Request, Response, Router } from 'express';
+import Group, { GroupValidator } from '../models/group';
+import GroupService from '../services/group';
+import { validationHandler } from '../shared/api';
 
 const router = Router();
 

@@ -47,3 +47,26 @@ export async function validationHandler(
     .status(400)
     .json({ cause: 'Validation Error', errors: errorResponse });
 }
+
+export function logErrors(
+  err: Error,
+  req: Request,
+  res: Response,
+  next: Function
+) {
+  console.error(err.stack);
+  next(err);
+}
+
+export function clientErrorHandler(
+  err: unknown,
+  req: Request,
+  res: Response,
+  next: Function
+) {
+  if (req.xhr) {
+    res.status(400).json(err);
+  } else {
+    next(err);
+  }
+}

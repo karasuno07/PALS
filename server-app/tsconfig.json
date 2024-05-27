@@ -4,6 +4,7 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
@@ -13,9 +14,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"],
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  }
+  "include": ["**/*.ts", "webpack.config.mjs"],
+  "exclude": ["node_modules"]
 }

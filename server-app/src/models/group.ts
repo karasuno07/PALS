@@ -1,6 +1,6 @@
-import { HttpClientError } from '@/errors';
 import { body, param } from 'express-validator';
 import { Schema, model } from 'mongoose';
+import { HttpClientError } from '../errors';
 
 const groupSchema = new Schema({
   name: { type: String, required: true, unique: true },

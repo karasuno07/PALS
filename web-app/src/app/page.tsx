@@ -2,7 +2,6 @@ import GroupList from '@/components/GroupList';
 import EmptyData from '@/components/GroupList/EmptyData';
 import GroupService from '@/services/group';
 
-export const dynamic = 'force-dynamic';
 
 export default async function Welcome() {
   const groups = await GroupService.search();
@@ -11,3 +10,6 @@ export default async function Welcome() {
 
   return <GroupList groups={groups} />;
 }
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;

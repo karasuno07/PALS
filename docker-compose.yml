@@ -42,3 +42,12 @@ services:
       - "3000:3000"
     # volumes:
     #   - web-app-build:/app
+  server-app:
+    container_name: pals-server-app
+    build:
+      context: ./server-app
+      dockerfile: Dockerfile
+    image: pals-server-app
+    env_file: .env
+    ports:
+      - "8080:8080"

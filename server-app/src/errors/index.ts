@@ -1,1 +1,10 @@
-export class HttpClientError extends Error {}
+export class HttpClientError extends Error {
+  cause: string;
+  errors?: unknown[];
+
+  constructor(cause: string, errors?: unknown[]) {
+    super(cause);
+    this.cause = cause;
+    this.errors = errors;
+  }
+}
