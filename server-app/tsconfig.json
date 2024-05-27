@@ -9,10 +9,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["**/*.ts", "webpack.config.mjs"],
   "exclude": ["node_modules"]

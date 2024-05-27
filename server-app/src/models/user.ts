@@ -1,6 +1,6 @@
-import { HttpClientError } from '@/errors';
 import { body, param } from 'express-validator';
 import { Schema, model } from 'mongoose';
+import { HttpClientError } from '../errors';
 
 const userSchema = new Schema({
   username: {
