@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express';
+import { TokenResponse } from '../models/auth';
 import { UserAuth, UserRequest, UserValidator } from '../models/user';
 import AuthService from '../services/auth';
 import UserService from '../services/user';
@@ -15,7 +16,7 @@ router.post(
 
     const token = await AuthService.login(username, password);
 
-    return res.status(200).json({ token });
+    return res.status(200).json(TokenResponse.json(token));
   }
 );
 
@@ -26,8 +27,10 @@ router.post(
   async (req: Request, res: Response) => {
     const payload = req.body as UserRequest;
 
-    const user = UserService.create(payload);
+    const token = await UserService.create(payload);
 
-    return res.status(200).json(user);
+    return res.status(201).json(TokenResponse.json(token));
   }
 );
+
+export default router;
