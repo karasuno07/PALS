@@ -8,3 +8,12 @@ export class HttpClientError extends Error {
     this.errors = errors;
   }
 }
+
+export class AuthenticationError extends Error {
+  type: string;
+
+  constructor(type: string, message?: string) {
+    super(message);
+    this.type = type;
+  }
+}
