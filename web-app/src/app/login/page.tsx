@@ -33,8 +33,6 @@ export default function Login({}) {
     resolver: yupResolver(AuthForm.validationSchema),
   });
 
-  const key = '123';
-
   const onLoginHandler = async ({ username, password }: AuthRequest) => {
     try {
       const jwt = await AuthService.authenticate(username, password);
