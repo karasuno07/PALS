@@ -32,7 +32,7 @@ export const UserValidator = {
   findByUsername: [
     param('username', 'Username is required for searching').notEmpty(),
   ],
-  login: [
+  authenticate: [
     body('username', 'Username is required').notEmpty(),
     body(
       'username',

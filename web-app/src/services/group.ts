@@ -1,27 +1,30 @@
 import { GroupRequest, GroupResponse } from '@/models/Group';
-import fetch from '@/shared/api';
+import api from '@/shared/api';
 
 const GroupService = {
   async search(query?: string) {
     let list: GroupResponse[] = [];
     if (!query) {
-      const response = (await fetch.get('groups').json()) as GroupResponse[];
-      list = response;
+      const response = await api().get('/groups');
+      const data = await response.json();
+      list = data as GroupResponse[];
     } else {
       // TODO:
     }
     return list;
   },
   async findById(id: string) {
-    const response = await fetch.get(`groups/${id}`).json();
-    return response as GroupResponse;
+    const response = await api().get(`/groups/${id}`);
+    return (await response.json()) as GroupResponse;
   },
   async create(data: GroupRequest) {
-    const response = await fetch.post('groups', { json: data });
+    const response = await api().post('/groups', {
+      body: JSON.stringify(data),
+    });
     return response.ok === true;
   },
   async deleteById(id: string) {
-    const response = await fetch.delete(`groups/${id}`);
+    const response = await api().delete(`/groups/${id}`);
     return response.ok === true;
   },
 };

@@ -60,14 +60,16 @@ export function logger(req: Request, res: Response, next: Function) {
 export function jwtInterceptor(req: Request, res: Response, next: Function) {
   const { url, headers } = req;
   const tokenPrefix = 'Bearer ';
-  const publicRoutes = ['/api/login', '/api/register'];
+  const publicRoutes = ['/api/authenticate', '/api/register'];
 
   if (!publicRoutes.includes(url)) {
     const authorizationHeader = headers.authorization;
     if (!authorizationHeader) {
       res.status(403).json({
-        error: 'AccessDenied',
-        message: 'You do not have permisson to view/modify this resource',
+        error: {
+          name: 'Access Denied',
+          message: 'You do not have permisson to view/modify this resource',
+        },
       });
     } else {
       const token = authorizationHeader.substring(tokenPrefix.length);
@@ -80,19 +82,19 @@ export function jwtInterceptor(req: Request, res: Response, next: Function) {
         next();
       } catch (err: unknown) {
         if (err instanceof TokenExpiredError) {
-          res.status(401).json({
-            error: err.name,
-            message: err.message,
-            expiredAt: err.expiredAt,
-          });
+          res.status(401).json({ error: { ...err } });
         } else if (err instanceof Error) {
           res.status(400).json({
-            error: err.name,
-            message: err.message,
+            error: {
+              error: err.name,
+              message: err.message,
+            },
           });
         } else {
           res.status(500).json({
-            error: 'InternalServerError',
+            error: {
+              name: 'Internal Server Error',
+            },
           });
         }
       }

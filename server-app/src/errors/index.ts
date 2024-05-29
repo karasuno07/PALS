@@ -10,10 +10,10 @@ export class HttpClientError extends Error {
 }
 
 export class AuthenticationError extends Error {
-  type: string;
+  name: string;
 
-  constructor(type: string, message?: string) {
+  constructor(name: string, message?: string) {
     super(message);
-    this.type = type;
+    this.name = name;
   }
 }
