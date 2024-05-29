@@ -6,6 +6,7 @@ import {
   HttpServerError,
 } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
+import { decryptCookieValue } from './token';
 
 export const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/api';
 
@@ -21,7 +22,10 @@ export function apiHandler(handler: { [method: string]: Function }) {
         // global middleware
         const tokenCookie = req.cookies.get('gat');
         if (tokenCookie) {
-          req.headers.set('Authorization', `Bearer ${tokenCookie.value}`);
+          req.headers.set(
+            'Authorization',
+            `Bearer ${decryptCookieValue(tokenCookie.value)}`
+          );
         }
 
         // route handler
@@ -66,7 +70,7 @@ export default function api(baseUrl: string = BASE_URL) {
     const headers = Object.assign(
       {},
       {
-        'Content-Type': 'application/json; charset=utf8',
+        'Content-Type': 'application/json',
       },
       options?.headers
     );

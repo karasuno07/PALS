@@ -25,11 +25,7 @@ services:
     image: mongo-express
     restart: always
     ports:
-<<<<<<< Updated upstream
       - 9011:8081
-=======
-      - 9002:8080
->>>>>>> Stashed changes
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ADMIN_USER}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PWD}
