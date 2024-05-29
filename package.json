@@ -1,0 +1,11 @@
+{
+  "name": "pals",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/karasuno07/PALS.git",
+  "author": "Chien Tan Kieu (Ryan) <kennyjoe1311@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "docker:server": "docker compose up --build -d"
+  }
+}
