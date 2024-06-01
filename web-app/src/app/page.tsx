@@ -1,28 +1,14 @@
 import GroupList from '@/components/GroupList';
 import EmptyData from '@/components/GroupList/EmptyData';
-import api from '@/shared/api';
-import { decryptCookieValue } from '@/shared/token';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { GroupResponse } from '@/models/Group';
+import { api } from '@/shared/api';
 
 export default async function Welcome() {
-  const jwt = cookies().get('gat')?.value;
+  const response = await api<GroupResponse[]>('/groups');
 
-  if (jwt) {
-    const decodedToken = decryptCookieValue(jwt);
-    const data = await api().get('/groups', {
-      headers: {
-        Authorization: `Bearer ${decodedToken}`,
-      },
-    });
-    const groups = await data.json();
+  if (!response.success || response.data.length === 0) return <EmptyData />;
 
-    if (!groups || groups.length === 0) return <EmptyData />;
-
-    return <GroupList groups={groups} />;
-  } else {
-    redirect('/login');
-  }
+  return <GroupList groups={response.data} />;
 }
 
 export const dynamic = 'force-dynamic';

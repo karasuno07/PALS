@@ -1,14 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { decryptCookieValue } from './shared/token';
+import { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-
-  const tokenCookie = req.cookies.get('gat')?.value;
-  if (tokenCookie) {
-    const jwt = decryptCookieValue(tokenCookie);
-    req.headers.set('Authorization', `Bearer ${jwt}`);
-  }
+  // TODO:
 }
 
 export const config = {

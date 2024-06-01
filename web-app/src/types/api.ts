@@ -1,7 +1,3 @@
-import { NextResponse } from 'next/server';
-
-
-
 type Enumerate<
   N extends number,
   Acc extends number[] = [],
@@ -53,9 +49,17 @@ export class HttpServerError extends HttpError {
   }
 }
 
-export const ErrorResponse = {
-  json({ name, status, message }: HttpError) {
-    return NextResponse.json({ name, message }, { status, statusText: name });
-  },
+type SuccessResponse<T> = {
+  success: true;
+  data: T;
 };
 
+type ErrorResponse = {
+  success: false;
+  error: {
+    name: string;
+    message: string;
+  };
+};
+
+export type ApiResponse<T = any> = SuccessResponse<T> | ErrorResponse;

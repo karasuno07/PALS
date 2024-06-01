@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { AuthenticationError } from '../errors';
+import { HttpClientError } from '../errors';
 import User from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
 
@@ -9,19 +9,19 @@ const AuthService = {
     const user = await User.findOne({ username });
 
     if (!user) {
-      throw new AuthenticationError(
-        'username_not_found',
-        'User not found. Please verify your username again'
-      );
+      throw new HttpClientError({
+        name: 'username_not_found',
+        message: 'User not found. Please verify your username again',
+      });
     }
 
     const isPasswordValid = await compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new AuthenticationError(
-        'incorrect_password',
-        'Incorrect password. Please try again'
-      );
+      throw new HttpClientError({
+        name: 'incorrect_password',
+        message: 'Incorrect password. Please try again',
+      });
     }
 
     const jwt = sign(

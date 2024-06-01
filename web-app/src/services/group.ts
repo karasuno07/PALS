@@ -1,32 +1,30 @@
-import { GroupRequest, GroupResponse } from '@/models/Group';
-import api from '@/shared/api';
+'use server';
 
-const GroupService = {
-  async search(query?: string) {
-    let list: GroupResponse[] = [];
-    if (!query) {
-      const response = await api().get('/groups');
-      const data = await response.json();
-      list = data as GroupResponse[];
-    } else {
-      // TODO:
-    }
-    return list;
-  },
-  async findById(id: string) {
-    const response = await api().get(`/groups/${id}`);
-    return (await response.json()) as GroupResponse;
-  },
-  async create(data: GroupRequest) {
-    const response = await api().post('/groups', {
-      body: JSON.stringify(data),
+import { BASE_URL } from '@/constants';
+import { GroupResponse } from '@/models/Group';
+import { api } from '@/shared/api';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+export async function fetchUserGroups() {
+  const jwt = cookies().get('gat')?.value;
+
+  if (jwt) {
+    const response = await fetch(BASE_URL + '/groups', {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     });
-    return response.ok === true;
-  },
-  async deleteById(id: string) {
-    const response = await api().delete(`/groups/${id}`);
-    return response.ok === true;
-  },
-};
+    if (response.ok) {
+      const data = await response.json();
 
-export default GroupService;
+      return data as GroupResponse[];
+    }
+  } else {
+    redirect('/login');
+  }
+}
+
+export async function fetchUserGroups2() {
+  const data = await api<GroupResponse[]>('/groups');
+}

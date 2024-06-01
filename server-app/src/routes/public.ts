@@ -11,7 +11,7 @@ router.post(
   '/authenticate',
   UserValidator.authenticate,
   validationHandler,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: Function) => {
     const { username, password } = req.body as UserAuth;
 
     const token = await AuthService.login(username, password);

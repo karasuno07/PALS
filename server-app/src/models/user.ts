@@ -48,7 +48,10 @@ export const UserValidator = {
     body('username', 'Username already in use').custom(async (username) => {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
-        throw new HttpClientError('Group name already in use');
+        throw new HttpClientError({
+          name: 'Validation Error',
+          message: 'Group name already in use',
+        });
       }
     }),
     body('username', 'Username is required').notEmpty(),

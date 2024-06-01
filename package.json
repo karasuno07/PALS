@@ -6,6 +6,7 @@
   "author": "Chien Tan Kieu (Ryan) <kennyjoe1311@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "docker:server": "docker compose up --build -d"
+    "docker:server": "docker compose up --build mongo mongo-express server-app -d",
+    "docker:webapp": "docker compose up --build web-app -d"
   }
 }

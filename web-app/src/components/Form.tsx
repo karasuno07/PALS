@@ -1,58 +1,102 @@
-import React from 'react';
 import {
-  DefaultValues,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  InputProps,
+} from '@chakra-ui/react';
+import {
+  Control,
+  Controller,
+  ControllerFieldState,
+  ControllerProps,
+  ControllerRenderProps,
+  FieldPath,
   FieldValues,
-  FormProvider,
-  Mode,
-  Resolver,
-  useForm,
+  UseFormStateReturn,
   useFormContext,
 } from 'react-hook-form';
 
-interface FormProps<T extends FieldValues>
-  extends Omit<React.HTMLProps<HTMLFormElement>, 'onSubmit' | 'children'> {
-  mode?: Mode;
-  defaultValues?: DefaultValues<T>;
-  resolver?: Resolver<T, any>;
-  onSubmit?: (data: T, evt?: any) => void;
-  children:
-    | React.ReactNode
-    | ((methods: ReturnType<typeof useForm<T>>) => React.ReactNode);
+type FormFieldProps = {
+  label: string;
+  name: string;
+  controller?: Control<FieldValues, any>;
+} & InputProps;
+
+export function FormField({
+  id,
+  type = 'text',
+  label,
+  name,
+  controller,
+  ...props
+}: FormFieldProps) {
+  const formContext = useFormContext();
+
+  const FieldComponent = (control: Control<FieldValues, any>) => {
+    return (
+      <Controller
+        control={control}
+        name={name}
+        render={({ field, fieldState }) => {
+          const isError = fieldState.isDirty && !!fieldState.error;
+          return (
+            <FormControl isInvalid={isError}>
+              <FormLabel>{label}</FormLabel>
+              <Input id={id} type={type} {...props} {...field} />
+              {isError && (
+                <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
+              )}
+            </FormControl>
+          );
+        }}
+      />
+    );
+  };
+
+  if (controller) {
+    return FieldComponent(controller);
+  } else if (formContext) {
+    return FieldComponent(formContext.control);
+  } else {
+    throw new Error(
+      `Can not initialize form field ${name} due to lack of control props`
+    );
+  }
 }
 
-export default function Form<T extends FieldValues>({
-  mode = 'onChange',
-  defaultValues,
-  resolver,
-  onSubmit,
-  children,
-  ...formProps
-}: FormProps<T>) {
-  const methods = useForm<T>({ defaultValues, mode, resolver });
-
-  return (
-    <FormProvider {...methods}>
-      <form
-        onSubmit={
-          onSubmit
-            ? methods.handleSubmit(onSubmit)
-            : (evt) => evt.preventDefault()
-        }
-        {...formProps}
-      >
-        {typeof children === 'function' && children({ ...methods })}
-        {typeof children !== 'function' && children}
-      </form>
-    </FormProvider>
-  );
-}
-
-type ConnectFormProps = {
-  children: (methods: ReturnType<typeof useFormContext>) => React.ReactNode;
+type FormField2Props<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = Omit<ControllerProps<TFieldValues, TName>, 'render'> & {
+  children: ({
+    field,
+    fieldState,
+    formState,
+  }: {
+    field: ControllerRenderProps<TFieldValues, TName>;
+    fieldState: ControllerFieldState;
+    formState: UseFormStateReturn<TFieldValues>;
+  }) => React.ReactElement;
 };
 
-export function ConnectForm({ children }: ConnectFormProps) {
-  const methods = useFormContext();
+export function FormField2<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({ name, control, children }: FormField2Props<TFieldValues, TName>) {
+  const formContext = useFormContext<TFieldValues>();
 
-  return children({ ...methods });
+  const FieldComponent = (control: Control<TFieldValues>) => {
+    return <Controller control={control} name={name} render={children} />;
+  };
+
+  if (control) {
+    return FieldComponent(control);
+  } else if (formContext) {
+    return FieldComponent(formContext.control);
+  } else {
+    throw new Error(
+      `Can not initialize form field ${name} due to lack of control props`
+    );
+  }
 }
