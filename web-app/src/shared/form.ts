@@ -1,5 +1,5 @@
 import { FormState } from '@/types/form';
-import { z } from 'zod';
+import { AnyZodObject, ZodEffects } from 'zod';
 
 export type FormCallbackParams = {
   fields: Record<string, string>;
@@ -10,7 +10,7 @@ export type FormCallbackParams = {
 
 export async function processForm(
   data: FormData,
-  validationSchema: z.AnyZodObject,
+  validationSchema: AnyZodObject | ZodEffects<AnyZodObject>,
   callback: ({ data, fields }: FormCallbackParams) => Promise<FormState>
 ): Promise<FormState> {
   const formData = Object.fromEntries(data);

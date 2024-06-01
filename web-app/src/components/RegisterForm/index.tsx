@@ -9,12 +9,15 @@ import {
   FormLabel,
   Input,
   Spacer,
+  useToast,
 } from '@chakra-ui/react';
-import { useRef } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormField, PasswordInput } from '../Field';
 import { onRegister } from './formAction';
+import { RegisterValidationSchema } from './formSchema';
 
 type Props = {};
 
@@ -27,9 +30,37 @@ export default function RegisterForm({}: Props) {
   });
 
   const formMethods = useForm({
-    mode: 'onSubmit',
-    defaultValues: {},
+    mode: 'onChange',
+    defaultValues: {
+      username: '',
+      password: '',
+      confirmPassword: '',
+      name: '',
+      email: '',
+      ...(state.fields ?? {}),
+    },
+    resolver: zodResolver(RegisterValidationSchema),
   });
+
+  const toast = useToast({
+    position: 'bottom-right',
+  });
+
+  useEffect(() => {
+    if (!state.success && state.message.length > 0) {
+      toast({
+        title: 'Register Failed',
+        description: state.message,
+        status: 'error',
+        isClosable: true,
+        duration: 1000,
+      });
+    }
+    return () => {
+      toast.closeAll();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   const formHasError =
     formMethods.formState.isDirty &&
@@ -81,7 +112,7 @@ export default function RegisterForm({}: Props) {
               );
             }}
           </FormField>
-          <FormField name='confirm-password'>
+          <FormField name='confirmPassword'>
             {({ field, fieldState }) => {
               const isError = fieldState.isDirty && !!fieldState.error;
               return (

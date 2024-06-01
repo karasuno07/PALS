@@ -32,7 +32,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { MdSearch } from 'react-icons/md';
 import { z } from 'zod';
-import { FormField2 } from '../Form';
+import { FormField } from '../Field';
 import Icon from '../Icon';
 
 export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
@@ -139,7 +139,7 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
               </Alert>
             )}
             <Box display='flex' flexDirection='column' gap={3}>
-              <FormField2 name='name'>
+              <FormField name='name'>
                 {({ field, fieldState }) => {
                   const isError = fieldState.isDirty && !!fieldState.error;
                   return (
@@ -158,8 +158,8 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
                     </FormControl>
                   );
                 }}
-              </FormField2>
-              <FormField2 name='description'>
+              </FormField>
+              <FormField name='description'>
                 {({ field, fieldState }) => {
                   const isError = fieldState.isDirty && !!fieldState.error;
                   return (
@@ -178,7 +178,7 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
                     </FormControl>
                   );
                 }}
-              </FormField2>
+              </FormField>
             </Box>
           </ModalBody>
           <ModalFooter>

@@ -1,7 +1,10 @@
 import Icon from '@/components/Icon';
 import Link from '@/components/Link';
-import { Circle, Flex } from '@chakra-ui/react';
+import { Box, Button, Circle, Flex, Spacer } from '@chakra-ui/react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { MdHome } from 'react-icons/md';
+import { VscSignOut } from 'react-icons/vsc';
 
 type Props = {};
 
@@ -15,6 +18,12 @@ export const headerStyles = {
 };
 
 export default function Header({}: Props) {
+  const signOutAction = async () => {
+    'use server';
+    cookies().delete('gat');
+    redirect('/login');
+  };
+
   return (
     <Flex alignItems='center' {...headerStyles.container}>
       <Link href='/'>
@@ -22,6 +31,20 @@ export default function Header({}: Props) {
           <Icon icon={MdHome} iconProps={{ size: '24px' }} />
         </Circle>
       </Link>
+      <Spacer />
+      <Box
+        as='form'
+        action={signOutAction}
+        display={cookies().get('gat')?.value ? 'block' : 'none'}
+      >
+        <Button
+          type='submit'
+          leftIcon={<VscSignOut size={18} />}
+          colorScheme='red'
+        >
+          Sign out
+        </Button>
+      </Box>
     </Flex>
   );
 }

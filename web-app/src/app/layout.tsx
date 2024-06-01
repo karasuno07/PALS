@@ -7,9 +7,6 @@ import MainLayout from '@/layouts/MainLayout';
 export const metadata: Metadata = {
   title: 'PALS',
   description: 'Payment and Loan Sharing',
-  icons: {
-    icon: 'favicon.ico',
-  },
 };
 
 export default function RootLayout({

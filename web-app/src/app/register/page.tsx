@@ -7,7 +7,13 @@ export default function Register() {
     <AbsoluteCenter>
       <Card>
         <CardHeader display='flex' justifyContent='center' paddingBottom={0}>
-          <Image src='/images/logo.png' alt='PALS' width={200} height={50} />
+          <Image
+            priority
+            src='/images/logo.png'
+            alt='PALS'
+            width={200}
+            height={50}
+          />
         </CardHeader>
         <CardBody>
           <RegisterForm />

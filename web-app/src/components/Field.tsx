@@ -5,6 +5,7 @@ import {
   InputGroup,
   InputProps,
   InputRightElement,
+  forwardRef,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import {
@@ -56,19 +57,22 @@ export function FormField<
   }
 }
 
-export function PasswordInput(props: Omit<InputProps, 'type'>) {
-  const [show, toggleShow] = useState<boolean>(false);
+export const PasswordInput = forwardRef<Omit<InputProps, 'type'>, 'input'>(
+  function PasswordInput(props, ref) {
+    const [show, toggleShow] = useState<boolean>(false);
 
-  const ToggleIcon = show ? MdVisibilityOff : MdVisibility;
+    const ToggleIcon = show ? MdVisibilityOff : MdVisibility;
 
-  const onToggleShowHandler = () => toggleShow((prev) => !prev);
+    const onToggleShowHandler = () => toggleShow((prev) => !prev);
 
-  return (
-    <InputGroup>
-      <Input type={show ? 'text' : 'password'} {...props} />
-      <InputRightElement cursor='pointer'>
-        <ToggleIcon size={16} onClick={onToggleShowHandler} />
-      </InputRightElement>
-    </InputGroup>
-  );
-}
+    return (
+      <InputGroup>
+        <Input type={show ? 'text' : 'password'} {...props} />
+        <InputRightElement cursor='pointer'>
+          <ToggleIcon size={16} onClick={onToggleShowHandler} />
+        </InputRightElement>
+      </InputGroup>
+    );
+  }
+);
+
