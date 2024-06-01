@@ -1,10 +1,19 @@
 'use client';
 
-import { Box, Button, Flex, Spacer } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Spacer,
+} from '@chakra-ui/react';
 import { useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FormField } from '../Form';
+import { FormField, PasswordInput } from '../Field';
 import { onRegister } from './formAction';
 
 type Props = {};
@@ -40,26 +49,86 @@ export default function RegisterForm({}: Props) {
         }}
       >
         <Flex flexDirection='column' gap='10px' width='300px'>
-          <FormField id='username' name='username' label='Username' />
-          <FormField
-            id='password'
-            name='password'
-            type='password'
-            label='Password'
-          />
-          <FormField
-            id='confirm-password'
-            name='confirm-password'
-            type='password'
-            label='Confirm Password'
-          />
-          <FormField id='name' name='name' label='Full Name' />
-          <FormField
-            id='email'
-            name='email'
-            type='email'
-            label='Email Address'
-          />
+          <FormField name='username'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Username</FormLabel>
+                  <Input id='username' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
+          <FormField name='password'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Password</FormLabel>
+                  <PasswordInput id='password' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
+          <FormField name='confirm-password'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <PasswordInput id='confirm-password' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
+          <FormField name='name'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Full Name</FormLabel>
+                  <Input id='name' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
+          <FormField name='email'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Email Address</FormLabel>
+                  <Input id='email' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
           <Spacer />
           <Button isDisabled={formHasError} type='submit' colorScheme='red'>
             Create account

@@ -1,7 +1,6 @@
+'use client';
+
 import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Input,
   InputGroup,
   InputProps,
@@ -21,55 +20,7 @@ import {
 } from 'react-hook-form';
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 
-type FormFieldProps = {
-  label: string;
-  name: string;
-  controller?: Control<FieldValues, any>;
-} & InputProps;
-
-export function FormField({
-  id,
-  type = 'text',
-  label,
-  name,
-  controller,
-  ...props
-}: FormFieldProps) {
-  const formContext = useFormContext();
-
-  const FieldComponent = (control: Control<FieldValues, any>) => {
-    return (
-      <Controller
-        control={control}
-        name={name}
-        render={({ field, fieldState }) => {
-          const isError = fieldState.isDirty && !!fieldState.error;
-          return (
-            <FormControl isInvalid={isError}>
-              <FormLabel>{label}</FormLabel>
-              <Input id={id} type={type} {...props} {...field} />
-              {isError && (
-                <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
-              )}
-            </FormControl>
-          );
-        }}
-      />
-    );
-  };
-
-  if (controller) {
-    return FieldComponent(controller);
-  } else if (formContext) {
-    return FieldComponent(formContext.control);
-  } else {
-    throw new Error(
-      `Can not initialize form field ${name} due to lack of control props`
-    );
-  }
-}
-
-type FormField2Props<
+type FormFieldProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Omit<ControllerProps<TFieldValues, TName>, 'render'> & {
@@ -84,10 +35,10 @@ type FormField2Props<
   }) => React.ReactElement;
 };
 
-export function FormField2<
+export function FormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({ name, control, children }: FormField2Props<TFieldValues, TName>) {
+>({ name, control, children }: FormFieldProps<TFieldValues, TName>) {
   const formContext = useFormContext<TFieldValues>();
 
   const FieldComponent = (control: Control<TFieldValues>) => {

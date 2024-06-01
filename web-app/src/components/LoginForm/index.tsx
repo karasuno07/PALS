@@ -1,7 +1,17 @@
 'use client';
 
-import { FormField } from '@/components/Form';
-import { Box, Button, Flex, Spacer, useToast } from '@chakra-ui/react';
+import { FormField, PasswordInput } from '@/components/Field';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Spacer,
+  useToast,
+} from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
@@ -65,13 +75,38 @@ export default function LoginForm() {
         }}
       >
         <Flex flexDirection='column' gap='10px' width='300px'>
-          <FormField id='username' name='username' label='Username' />
-          <FormField
-            id='password'
-            name='password'
-            type='password'
-            label='Password'
-          />
+          <FormField name='username'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Username</FormLabel>
+                  <Input id='username' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
+          <FormField name='password'>
+            {({ field, fieldState }) => {
+              const isError = fieldState.isDirty && !!fieldState.error;
+              return (
+                <FormControl isInvalid={isError}>
+                  <FormLabel>Password</FormLabel>
+                  <PasswordInput id='password' {...field} />
+                  {isError && (
+                    <FormErrorMessage>
+                      {fieldState.error?.message}
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
+              );
+            }}
+          </FormField>
           <Flex fontSize={14} flexDirection='row-reverse'>
             <Link
               href='/register'
