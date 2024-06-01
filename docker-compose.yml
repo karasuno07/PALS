@@ -8,6 +8,7 @@ services:
   mongo:
     container_name: mongodb
     image: mongo
+    restart: always
     ports:
       - "9010:27017"
     environment:
@@ -36,6 +37,7 @@ services:
       context: ./web-app
       dockerfile: Dockerfile
     image: pals-web-app
+    restart: always
     env_file: .env
     ports:
       - "${UI_PORT:-3000}:3000"
@@ -45,6 +47,7 @@ services:
       context: ./server-app
       dockerfile: Dockerfile
     image: pals-server-app
+    restart: always
     env_file: .env
     ports:
       - "${SERVER_PORT:-8080}:8080"
