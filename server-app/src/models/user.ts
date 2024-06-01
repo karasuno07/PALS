@@ -64,6 +64,7 @@ export const UserValidator = {
       'password',
       'Password must be between 6 and 50 characters length'
     ).isLength({ min: 6, max: 20 }),
+    body('name', 'Name is required').notEmpty(),
   ],
 };
 
@@ -75,7 +76,7 @@ export type UserAuth = {
 export type UserRequest = {
   username: string;
   password: string;
-  name?: string;
+  name: string;
   email?: string;
   image?: string;
 };

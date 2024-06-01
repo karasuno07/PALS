@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
+import Link from '../Link';
 import { onLogin } from './formAction';
 import { LoginValidationSchema } from './formSchema';
 
@@ -71,6 +72,15 @@ export default function LoginForm() {
             type='password'
             label='Password'
           />
+          <Flex fontSize={14} flexDirection='row-reverse'>
+            <Link
+              href='/register'
+              color='blue'
+              _hover={{ textDecoration: 'underline' }}
+            >
+              Register
+            </Link>
+          </Flex>
           <Spacer />
           <Button isDisabled={formHasError} type='submit' colorScheme='red'>
             Login
