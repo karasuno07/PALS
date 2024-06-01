@@ -15,6 +15,7 @@ export async function onRegister(
       const response = await api('/register', {
         method: 'POST',
         body: JSON.stringify(data),
+        skipAuth: true,
       });
 
       if (response.success) {
