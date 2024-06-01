@@ -8,10 +8,10 @@ import { validationHandler } from '../shared/api';
 const router = Router();
 
 router.post(
-  '/login',
-  UserValidator.login,
+  '/authenticate',
+  UserValidator.authenticate,
   validationHandler,
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: Function) => {
     const { username, password } = req.body as UserAuth;
 
     const token = await AuthService.login(username, password);

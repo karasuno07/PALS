@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import GroupRouter from './routes/group';
 import PublicRouter from './routes/public';
 import UserRouter from './routes/user';
-import { logger } from './shared/api';
+import { errorHandler, jwtInterceptor, logger } from './shared/api';
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 app.use(cors());
 app.use(logger);
-// app.use(jwtInterceptor);
+app.use(jwtInterceptor);
 
 mongoose.connect(process.env.DATABASE_URL || '', {});
 
@@ -26,6 +26,8 @@ app.get('/', async (req: Request, res: Response) => {
 app.use('/api', PublicRouter);
 app.use('/api/groups', GroupRouter);
 app.use('/api/users', UserRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

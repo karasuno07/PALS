@@ -1,56 +1,50 @@
-import { HttpClientError, HttpMethod, HttpServerError } from '@/types/api';
-import ky from 'ky';
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
 
-export const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/api';
+import { BASE_URL } from '@/constants';
+import { ApiResponse } from '@/types/api';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-export function apiHandler(handler: { [method: string]: Function }) {
-  const wrappedHandler: any = {};
-  const httpMethods: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+export async function api<T = any>(
+  input: string | URL | Request,
+  init?: RequestInit & { skipAuth?: boolean }
+): Promise<ApiResponse<T>> {
+  const cookiesStore = cookies();
+  const token = cookiesStore.get('gat')?.value;
 
-  httpMethods.forEach((method) => {
-    if (typeof handler[method] !== 'function') return;
+  const headers: Headers = new Headers();
+  headers.append('Content-Type', 'application/json; charset=utf-8');
 
-    wrappedHandler[method] = async (req: NextRequest, ...args: any) => {
-      try {
-        // global middleware
+  if (!init?.skipAuth) {
+    if (!token) {
+      redirect('/login');
+    } else {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
 
-        // route handler
-        const response: NextResponse = await handler[method](req, ...args);
-
-        const body = await response.json();
-
-        return NextResponse.json(body, {
-          status: response.status,
-          headers: response.headers,
-        });
-      } catch (err: any) {
-        // global error handler
-        return errorHandler(err);
-      }
-    };
+  const request = typeof input === 'string' ? BASE_URL + input : input;
+  const requestOptions = Object.assign({}, init, {
+    headers,
   });
 
-  return wrappedHandler;
-}
+  const response = await fetch(request, requestOptions);
 
-function errorHandler(error: unknown) {
-  if (error instanceof HttpClientError) {
-    return HttpClientError.json(error);
-  } else if (error instanceof HttpServerError) {
-    return HttpServerError.json(error);
-  } else if (error instanceof TypeError || error instanceof SyntaxError) {
-    return HttpClientError.json(
-      HttpClientError.badClient(error.message, error.cause as string)
-    );
+  if (response.ok) {
+    const data = (await response.json()) as T;
+    return {
+      success: true,
+      data,
+    };
   } else {
-    console.error(error);
-    return HttpServerError.json(
-      HttpServerError.internalServerError(error as string)
-    );
+    const err = await response.json();
+    console.error('Error:', err);
+    return {
+      success: false,
+      error: {
+        name: err.error.name,
+        message: err.error.message,
+      },
+    };
   }
 }
-
-const fetch = ky.create({ prefixUrl: BASE_URL });
-
-export default fetch;

@@ -1,14 +1,14 @@
 import GroupList from '@/components/GroupList';
 import EmptyData from '@/components/GroupList/EmptyData';
-import GroupService from '@/services/group';
-
+import { GroupResponse } from '@/models/Group';
+import { api } from '@/shared/api';
 
 export default async function Welcome() {
-  const groups = await GroupService.search();
+  const response = await api<GroupResponse[]>('/groups');
 
-  if (!groups || groups.length === 0) return <EmptyData />;
+  if (!response.success || response.data.length === 0) return <EmptyData />;
 
-  return <GroupList groups={groups} />;
+  return <GroupList groups={response.data} />;
 }
 
 export const dynamic = 'force-dynamic';

@@ -1,5 +1,5 @@
 import Group from '@/models/Group';
-import GroupService from '@/services/group';
+import { api } from '@/shared/api';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -46,8 +46,8 @@ export default function List({ groups }: Props) {
 
   const onRemoveGroupHandler = async () => {
     const groupId = searchParams.get('id') as string;
-    const success = await GroupService.deleteById(groupId);
-    if (success) {
+    const response = await api(`/groups/${groupId}`, { method: 'DELETE' });
+    if (response.success) {
       onClose();
       router.refresh();
     } else {

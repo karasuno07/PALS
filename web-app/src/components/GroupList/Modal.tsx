@@ -1,8 +1,11 @@
 'use client';
 
-import { GroupForm, GroupRequest } from '@/models/Group';
-import GroupService from '@/services/group';
+import { GroupRequest } from '@/models/Group';
+import { api } from '@/shared/api';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Box,
   Button,
   ButtonGroup,
@@ -23,10 +26,13 @@ import {
   Textarea,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { MdSearch } from 'react-icons/md';
+import { z } from 'zod';
+import { FormField2 } from '../Form';
 import Icon from '../Icon';
 
 export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
@@ -75,25 +81,40 @@ export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
 
 export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
   const router = useRouter();
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-  } = useForm<GroupRequest>({
+  const [formError, setFormError] = useState<string | undefined>();
+
+  const formMethods = useForm<GroupRequest>({
     mode: 'onChange',
-    defaultValues: GroupForm.defaultValues,
-    resolver: yupResolver(GroupForm.validationSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+    },
+    resolver: zodResolver(
+      z.object({
+        name: z
+          .string()
+          .trim()
+          .min(3, 'Group name must be at least 3 characters length')
+          .max(10, 'Group name must be at most 10 characters length'),
+        description: z.string().trim().min(1, 'Group description is required'),
+      })
+    ),
   });
 
   const onCreateGroupHandler = async (data: GroupRequest) => {
-    const success = await GroupService.create(data);
-    if (success) {
+    const response = await api('/groups', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    if (response.success) {
       disclosureProps.onClose();
       router.refresh();
     } else {
-      // TODO:
+      setFormError(response.error.message);
     }
   };
+
+  const onClearFormErrorHandler = () => setFormError(undefined);
 
   return (
     <Modal
@@ -103,54 +124,80 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
       motionPreset='slideInTop'
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Add new group</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Box as='form' display='flex' flexDirection='column' gap={3}>
-            <FormControl isInvalid={!!errors.name}>
-              <FormLabel>Name</FormLabel>
-              <Input id='group-name' size='sm' {...register('name')} />
-              {errors.name && (
-                <FormErrorMessage>{errors.name.message}</FormErrorMessage>
-              )}
-            </FormControl>
-            <FormControl isInvalid={!!errors.description}>
-              <FormLabel>Description</FormLabel>
-              <Textarea
-                id='group-description'
+      <FormProvider {...formMethods}>
+        <ModalContent
+          as='form'
+          onSubmit={formMethods.handleSubmit(onCreateGroupHandler)}
+        >
+          <ModalHeader>Add new group</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {formError && (
+              <Alert status='error'>
+                <AlertIcon />
+                <AlertDescription>{formError}</AlertDescription>
+              </Alert>
+            )}
+            <Box display='flex' flexDirection='column' gap={3}>
+              <FormField2 name='name'>
+                {({ field, fieldState }) => {
+                  const isError = fieldState.isDirty && !!fieldState.error;
+                  return (
+                    <FormControl isInvalid={isError}>
+                      <FormLabel>Name</FormLabel>
+                      <Input
+                        id='name'
+                        onFocus={onClearFormErrorHandler}
+                        {...field}
+                      />
+                      {isError && (
+                        <FormErrorMessage>
+                          {fieldState.error?.message}
+                        </FormErrorMessage>
+                      )}
+                    </FormControl>
+                  );
+                }}
+              </FormField2>
+              <FormField2 name='description'>
+                {({ field, fieldState }) => {
+                  const isError = fieldState.isDirty && !!fieldState.error;
+                  return (
+                    <FormControl isInvalid={isError}>
+                      <FormLabel>Description</FormLabel>
+                      <Textarea
+                        id='description'
+                        onFocus={onClearFormErrorHandler}
+                        {...field}
+                      />
+                      {isError && (
+                        <FormErrorMessage>
+                          {fieldState.error?.message}
+                        </FormErrorMessage>
+                      )}
+                    </FormControl>
+                  );
+                }}
+              </FormField2>
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup spacing='10px'>
+              <Button
                 size='sm'
-                {...register('description')}
-              />
-              {errors.description && (
-                <FormErrorMessage>
-                  {errors.description.message}
-                </FormErrorMessage>
-              )}
-            </FormControl>
-          </Box>
-        </ModalBody>
-        <ModalFooter>
-          <ButtonGroup spacing='10px'>
-            <Button
-              size='sm'
-              variant='outline'
-              colorScheme='red'
-              onClick={disclosureProps.onClose}
-            >
-              Close
-            </Button>
-            <Button
-              size='sm'
-              type='submit'
-              colorScheme='green'
-              onClick={handleSubmit(onCreateGroupHandler)}
-            >
-              Create
-            </Button>
-          </ButtonGroup>
-        </ModalFooter>
-      </ModalContent>
+                variant='outline'
+                colorScheme='red'
+                onClick={disclosureProps.onClose}
+              >
+                Close
+              </Button>
+              <Button size='sm' type='submit' colorScheme='green'>
+                Create
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </FormProvider>
     </Modal>
   );
 }

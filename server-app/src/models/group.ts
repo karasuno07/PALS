@@ -36,16 +36,20 @@ export const GroupValidator = {
     body('name', 'Group name already in use').custom(async (name) => {
       const existingGroup = await Group.findOne({ name });
       if (existingGroup) {
-        throw new HttpClientError('Group name already in use');
+        throw new HttpClientError({
+          status: 400,
+          name: 'Validation Error',
+          message: 'Group name already in use',
+        });
       }
     }),
     body('name', 'Group name is required').notEmpty(),
     body(
       'name',
-      'Group name must be between 3 and 15 characters long'
+      'Group name must be between 3 and 10 characters long'
     ).isLength({
       min: 3,
-      max: 15,
+      max: 10,
     }),
     body('description', 'Group description is required').notEmpty(),
   ],
