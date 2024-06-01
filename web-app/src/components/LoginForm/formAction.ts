@@ -3,7 +3,6 @@
 import { AuthResponse } from '@/models/Auth';
 import { api } from '@/shared/api';
 import { FormCallbackParams, processForm } from '@/shared/form';
-import { encryptCookieValue } from '@/shared/token';
 import { FormState } from '@/types/form';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -24,7 +23,7 @@ export async function onLogin(
       });
       if (response.success) {
         const { token } = response.data;
-        cookies().set('gat', encryptCookieValue(token), {
+        cookies().set('gat', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           maxAge: 60 * 60,

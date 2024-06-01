@@ -4,7 +4,6 @@ import { BASE_URL } from '@/constants';
 import { ApiResponse } from '@/types/api';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { decryptCookieValue } from './token';
 
 export async function api<T = any>(
   input: string | URL | Request,
@@ -20,7 +19,7 @@ export async function api<T = any>(
     if (!token) {
       redirect('/login');
     } else {
-      headers.set('Authorization', `Bearer ${decryptCookieValue(token)}`);
+      headers.set('Authorization', `Bearer ${token}`);
     }
   }
 
@@ -39,7 +38,7 @@ export async function api<T = any>(
     };
   } else {
     const err = await response.json();
-    console.error('ERRROR', err);
+    console.error('Error:', err);
     return {
       success: false,
       error: {
