@@ -1,11 +1,10 @@
 'use server';
 
+import { ACCESS_TOKEN_SECRET, TOKEN_COOKIE_SECRET } from '@/constants';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-const TOKEN_COOKIE_SECRET = process.env.TOKEN_COOKIE_SECRET || 'pals-gat';
-const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'notasecrey';
 
 export async function getUserFromToken() {
   const cookiesStore = cookies();

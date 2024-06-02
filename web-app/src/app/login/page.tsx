@@ -1,19 +1,16 @@
 import LoginForm from '@/components/LoginForm';
+import OAuth2SignIn from '@/components/OAuth2SignIn';
 import {
   AbsoluteCenter,
   Box,
-  Button,
   Card,
   CardBody,
   CardHeader,
   Divider,
-  Stack,
 } from '@chakra-ui/react';
 import Image from 'next/image';
-import { FaGithub } from 'react-icons/fa6';
-import { FcGoogle } from 'react-icons/fc';
 
-export default function Login({}) {
+export default function Login() {
   return (
     <AbsoluteCenter>
       <Card>
@@ -34,22 +31,7 @@ export default function Login({}) {
               Or
             </AbsoluteCenter>
           </Box>
-          <Stack direction='column' gap={4}>
-            <Button
-              leftIcon={<FaGithub size={24} />}
-              iconSpacing={5}
-              bgColor='#000'
-              _hover={{
-                bgColor: '#444',
-              }}
-              colorScheme='blackAlpha'
-            >
-              Sign in with Github
-            </Button>
-            <Button leftIcon={<FcGoogle size={24} />} iconSpacing={5}>
-              Sign in with Google
-            </Button>
-          </Stack>
+          <OAuth2SignIn />
         </CardBody>
       </Card>
     </AbsoluteCenter>

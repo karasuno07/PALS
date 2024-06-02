@@ -3,7 +3,6 @@
 import { FormField, PasswordInput } from '@/components/Field';
 import {
   Box,
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -17,11 +16,13 @@ import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import Link from '../Link';
+import SubmitButton from '../SubmitButton';
 import { onLogin } from './formAction';
 import { LoginValidationSchema } from './formSchema';
 
 export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null);
+
   const [state, formAction] = useFormState(onLogin, {
     success: null,
     message: '',
@@ -50,6 +51,7 @@ export default function LoginForm() {
         isClosable: true,
         duration: 1000,
       });
+      formMethods.reset({ password: '' });
     }
     return () => {
       toast.closeAll();
@@ -60,6 +62,7 @@ export default function LoginForm() {
   const formHasError =
     formMethods.formState.isDirty &&
     Object.keys(formMethods.formState.errors).length > 0;
+  const isFormSubmitting = formMethods.formState.isSubmitSuccessful;
 
   return (
     <FormProvider {...formMethods}>
@@ -117,9 +120,12 @@ export default function LoginForm() {
             </Link>
           </Flex>
           <Spacer />
-          <Button isDisabled={formHasError} type='submit' colorScheme='red'>
+          <SubmitButton
+            isLoading={isFormSubmitting}
+            isDisabled={formHasError || isFormSubmitting}
+          >
             Login
-          </Button>
+          </SubmitButton>
         </Flex>
       </Box>
     </FormProvider>

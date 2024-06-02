@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -16,6 +15,7 @@ import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { FormField, PasswordInput } from '../Field';
+import SubmitButton from '../SubmitButton';
 import { onRegister } from './formAction';
 import { RegisterValidationSchema } from './formSchema';
 
@@ -65,6 +65,7 @@ export default function RegisterForm({}: Props) {
   const formHasError =
     formMethods.formState.isDirty &&
     Object.keys(formMethods.formState.errors).length > 0;
+  const isFormSubmitting = formMethods.formState.isSubmitSuccessful;
 
   return (
     <FormProvider {...formMethods}>
@@ -161,9 +162,12 @@ export default function RegisterForm({}: Props) {
             }}
           </FormField>
           <Spacer />
-          <Button isDisabled={formHasError} type='submit' colorScheme='red'>
+          <SubmitButton
+            isLoading={isFormSubmitting}
+            isDisabled={formHasError || isFormSubmitting}
+          >
             Create account
-          </Button>
+          </SubmitButton>
         </Flex>
       </Box>
     </FormProvider>

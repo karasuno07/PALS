@@ -1,10 +1,10 @@
 import Icon from '@/components/Icon';
 import Link from '@/components/Link';
-import { Box, Button, Circle, Flex, Spacer } from '@chakra-ui/react';
+import { TOKEN_COOKIE_SECRET } from '@/constants';
+import { Circle, Flex, Spacer } from '@chakra-ui/react';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { MdHome } from 'react-icons/md';
-import { VscSignOut } from 'react-icons/vsc';
+import SignOut from './SignOut';
 
 type Props = {};
 
@@ -18,12 +18,6 @@ export const headerStyles = {
 };
 
 export default function Header({}: Props) {
-  const signOutAction = async () => {
-    'use server';
-    cookies().delete('pals-gat');
-    redirect('/login');
-  };
-
   return (
     <Flex alignItems='center' {...headerStyles.container}>
       <Link href='/'>
@@ -32,19 +26,7 @@ export default function Header({}: Props) {
         </Circle>
       </Link>
       <Spacer />
-      <Box
-        as='form'
-        action={signOutAction}
-        display={cookies().get('pals-gat')?.value ? 'block' : 'none'}
-      >
-        <Button
-          type='submit'
-          leftIcon={<VscSignOut size={18} />}
-          colorScheme='red'
-        >
-          Sign out
-        </Button>
-      </Box>
+      <SignOut show={!!cookies().get(TOKEN_COOKIE_SECRET)?.value} />
     </Flex>
   );
 }

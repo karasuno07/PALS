@@ -34,6 +34,7 @@ import { MdSearch } from 'react-icons/md';
 import { z } from 'zod';
 import { FormField } from '../Field';
 import Icon from '../Icon';
+import SubmitButton from '../SubmitButton';
 
 export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
   return (
@@ -96,17 +97,23 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
           .trim()
           .min(3, 'Group name must be at least 3 characters length')
           .max(10, 'Group name must be at most 10 characters length'),
-        description: z.string().trim().min(1, 'Group description is required'),
       })
     ),
   });
 
-  const onCreateGroupHandler = async (data: GroupRequest) => {
+  const onCreateGroupHandler = async ({ name, description }: GroupRequest) => {
     const response = await api('/groups', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        name,
+        description:
+          !description || description.length === 0
+            ? 'Payments and Loan Sharing'
+            : description,
+      }),
     });
     if (response.success) {
+      formMethods.reset();
       disclosureProps.onClose();
       router.refresh();
     } else {
@@ -115,6 +122,11 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
   };
 
   const onClearFormErrorHandler = () => setFormError(undefined);
+
+  const formHasError =
+    formMethods.formState.isDirty &&
+    Object.keys(formMethods.formState.errors).length > 0;
+  const isFormSubmitting = formMethods.formState.isSubmitting;
 
   return (
     <Modal
@@ -168,6 +180,7 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
                       <Textarea
                         id='description'
                         onFocus={onClearFormErrorHandler}
+                        placeholder='Ex: Payments and Loan Sharing'
                         {...field}
                       />
                       {isError && (
@@ -191,9 +204,14 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
               >
                 Close
               </Button>
-              <Button size='sm' type='submit' colorScheme='green'>
+              <SubmitButton
+                size='sm'
+                colorScheme='green'
+                isLoading={isFormSubmitting}
+                isDisabled={formHasError || isFormSubmitting}
+              >
                 Create
-              </Button>
+              </SubmitButton>
             </ButtonGroup>
           </ModalFooter>
         </ModalContent>

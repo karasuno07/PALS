@@ -1,5 +1,6 @@
 'use server';
 
+import { TOKEN_COOKIE_SECRET } from '@/constants';
 import { AuthResponse } from '@/models/Auth';
 import { api } from '@/shared/api';
 import { FormCallbackParams, processForm } from '@/shared/form';
@@ -23,7 +24,7 @@ export async function onLogin(
       });
       if (response.success) {
         const { token } = response.data;
-        cookies().set('pals-gat', token, {
+        cookies().set(TOKEN_COOKIE_SECRET, token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           maxAge: 60 * 60,
