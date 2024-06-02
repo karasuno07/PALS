@@ -7,12 +7,16 @@ import { GroupValidator } from '../shared/validator';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response) => {
-  const query = req.query;
-  const page = Number(query.page as string) || 0;
-  const limit = Number(query.limit as string) || 20;
+router.post('/search', async (req: Request, res: Response) => {
+  const body = req.body;
 
-  const groups = await GroupService.search(page, limit);
+  const userId = body ? body.userId : undefined;
+  const page = body ? Number(body.page as string) : 0;
+  const limit = body ? Number(body.limit as string) : 20;
+
+  const searchParams = userId ? { userId } : {};
+
+  const groups = await GroupService.search(searchParams, page, limit);
 
   return res.status(200).json(groups);
 });
@@ -37,6 +41,7 @@ router.post(
   async (req: Request, res: Response) => {
     const { name, description } = req.body;
     const tokenPayload = await AuthService.getTokenPayload(req);
+    console.log('Token:', tokenPayload);
 
     const createdGroup = await GroupService.create({
       name,

@@ -24,7 +24,6 @@ export const GroupValidator = {
       max: 10,
     }),
     body('description', 'Group description is required').notEmpty(),
-    // body('createBy', 'User id is required').notEmpty(),
   ],
   findById: [
     param('groupId', 'Group Id is required for searching by Id').notEmpty(),

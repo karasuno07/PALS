@@ -2,10 +2,22 @@ import Group from '../models/group';
 import UserService from './user';
 
 const GroupService = {
-  async search(page: number, limit: number) {
-    return await Group.find()
-      .skip(page * limit)
-      .limit(limit);
+  async search(searchParams: { userId?: string }, page: number, limit: number) {
+    if (Object.keys(searchParams).length === 0) {
+      return await Group.find()
+        .skip(page * limit)
+        .limit(limit);
+    }
+    const { userId } = searchParams;
+
+    if (userId) {
+      const user = await UserService.findById(userId);
+      const groups = Group.find({ 'members.memberId': user._id });
+
+      return groups;
+    }
+
+    return [];
   },
   async findById(groupId: string) {
     return await Group.findById(groupId);
@@ -27,7 +39,7 @@ const GroupService = {
       memberBalance: 0,
       isAdmin: true,
     });
-    adminUser.groups.push({ groupId: group._id, groupName: group.name });
+    adminUser.groups.push({ id: group._id, name: group.name });
 
     await adminUser.save();
 
