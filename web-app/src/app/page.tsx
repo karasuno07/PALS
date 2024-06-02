@@ -2,9 +2,15 @@ import GroupList from '@/components/GroupList';
 import EmptyData from '@/components/GroupList/EmptyData';
 import { GroupResponse } from '@/models/Group';
 import { api } from '@/shared/api';
+import { getUserFromToken } from '@/shared/token';
 
 export default async function Welcome() {
-  const response = await api<GroupResponse[]>('/groups');
+  const { userId } = await getUserFromToken();
+
+  const response = await api<GroupResponse[]>('/groups/search', {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
+  });
 
   if (!response.success || response.data.length === 0) return <EmptyData />;
 

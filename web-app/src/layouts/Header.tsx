@@ -20,7 +20,7 @@ export const headerStyles = {
 export default function Header({}: Props) {
   const signOutAction = async () => {
     'use server';
-    cookies().delete('gat');
+    cookies().delete('pals-gat');
     redirect('/login');
   };
 
@@ -35,7 +35,7 @@ export default function Header({}: Props) {
       <Box
         as='form'
         action={signOutAction}
-        display={cookies().get('gat')?.value ? 'block' : 'none'}
+        display={cookies().get('pals-gat')?.value ? 'block' : 'none'}
       >
         <Button
           type='submit'

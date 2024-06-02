@@ -3,8 +3,7 @@ import { validationResult } from 'express-validator';
 import { JwtPayload, TokenExpiredError, verify } from 'jsonwebtoken';
 import { HttpError } from '../errors';
 
-export const ACCESS_TOKEN_SECRET =
-  process.env.ACCESS_TOKEN_SECRET || 'ACCESSTOKENSECRET';
+export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'notasecrey';
 
 export async function validationHandler(
   req: Request,

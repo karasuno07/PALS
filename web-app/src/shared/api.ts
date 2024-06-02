@@ -10,7 +10,7 @@ export async function api<T = any>(
   init?: RequestInit & { skipAuth?: boolean }
 ): Promise<ApiResponse<T>> {
   const cookiesStore = cookies();
-  const token = cookiesStore.get('gat')?.value;
+  const token = cookiesStore.get('pals-gat')?.value;
 
   const headers: Headers = new Headers();
   headers.append('Content-Type', 'application/json; charset=utf-8');
