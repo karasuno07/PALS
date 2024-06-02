@@ -1,10 +1,10 @@
 import Icon from '@/components/Icon';
 import Link from '@/components/Link';
 import { TOKEN_COOKIE_SECRET } from '@/constants';
+import SignOut from '@/features/auth/components/SignOut';
 import { Circle, Flex, Spacer } from '@chakra-ui/react';
 import { cookies } from 'next/headers';
 import { MdHome } from 'react-icons/md';
-import SignOut from './SignOut';
 
 type Props = {};
 

@@ -1,3 +1,5 @@
+import { ObjectId, ProjectionType } from 'mongoose';
+import { HttpClientError } from '../errors';
 import Group from '../models/group';
 import UserService from './user';
 
@@ -19,8 +21,44 @@ const GroupService = {
 
     return [];
   },
-  async findById(groupId: string) {
-    return await Group.findById(groupId);
+  async findById(groupId: string, projection?: ProjectionType<any>) {
+    const group = await Group.findById(groupId, projection);
+    if (!group) {
+      throw new HttpClientError({
+        status: 400,
+        name: 'Resource Not Found',
+        message: `Not found any group with id ${groupId}`,
+      });
+    }
+    return group;
+  },
+  async getGroupMembers(groupId: string) {
+    const group = await GroupService.findById(groupId);
+    const groupMembers = group.members;
+    const members = await UserService.findAllByIds(
+      groupMembers
+        .filter((mem) => mem.memberId != null)
+        .map((mem) => mem.memberId as unknown as ObjectId)
+    );
+
+    if (members.length === 0) {
+      return members;
+    }
+
+    return members.map((member) => {
+      const mappedGroupMember = groupMembers.find(
+        (groupMem) => (groupMem.memberId = member.id)
+      );
+      return {
+        _id: member._id,
+        username: member.username,
+        name: member.name,
+        email: member.email,
+        image: member.image,
+        balance: mappedGroupMember?.memberBalance || 0,
+        isAdmin: mappedGroupMember?.isAdmin,
+      };
+    });
   },
   async create({
     name,
@@ -48,7 +86,8 @@ const GroupService = {
     return group;
   },
   async deleteById(groupId: string) {
-    await Group.findByIdAndDelete(groupId);
+    const group = await GroupService.findById(groupId);
+    await Group.findByIdAndDelete(group._id);
     console.log('Deleted group with id: ' + groupId);
   },
 };

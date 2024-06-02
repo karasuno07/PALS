@@ -1,5 +1,4 @@
 import { Request, Response, Router } from 'express';
-import Group from '../models/group';
 import AuthService from '../services/auth';
 import GroupService from '../services/group';
 import { validationHandler } from '../shared/api';
@@ -28,9 +27,26 @@ router.get(
   async (req: Request, res: Response) => {
     const { groupId } = req.params;
 
-    const group = await Group.findById(groupId);
+    const group = await GroupService.findById(groupId, {
+      expenses: 0,
+      members: 0,
+      balances: 0,
+    });
 
     return res.status(200).json(group);
+  }
+);
+
+router.get(
+  '/:groupId/members',
+  GroupValidator.findById,
+  validationHandler,
+  async (req: Request, res: Response) => {
+    const { groupId } = req.params;
+
+    const members = await GroupService.getGroupMembers(groupId);
+
+    return res.status(200).json(members);
   }
 );
 
@@ -41,7 +57,6 @@ router.post(
   async (req: Request, res: Response) => {
     const { name, description } = req.body;
     const tokenPayload = await AuthService.getTokenPayload(req);
-    console.log('Token:', tokenPayload);
 
     const createdGroup = await GroupService.create({
       name,

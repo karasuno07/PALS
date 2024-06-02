@@ -1,6 +1,6 @@
+import Icon from '@/components/Icon';
 import { IconButton, UseDisclosureReturn } from '@chakra-ui/react';
 import { MdOutlineAdd } from 'react-icons/md';
-import Icon from '../Icon';
 import GroupModal from './Modal';
 
 export function CreateButton({ onToggle }: UseDisclosureReturn) {

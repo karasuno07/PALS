@@ -21,7 +21,7 @@ const groupSchema = new Schema({
       ref: 'Expense',
     },
   ],
-  balance: [
+  balances: [
     {
       from: { type: Schema.Types.ObjectId, ref: 'Member' },
       to: { type: Schema.Types.ObjectId, ref: 'Member' },

@@ -1,5 +1,8 @@
 'use client';
 
+import { FormField } from '@/components/Field';
+import Icon from '@/components/Icon';
+import SubmitButton from '@/components/SubmitButton';
 import { GroupRequest } from '@/models/Group';
 import { api } from '@/shared/api';
 import {
@@ -32,9 +35,6 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { MdSearch } from 'react-icons/md';
 import { z } from 'zod';
-import { FormField } from '../Field';
-import Icon from '../Icon';
-import SubmitButton from '../SubmitButton';
 
 export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
   return (
@@ -96,7 +96,7 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
           .string()
           .trim()
           .min(3, 'Group name must be at least 3 characters length')
-          .max(10, 'Group name must be at most 10 characters length'),
+          .max(20, 'Group name must be at most 20 characters length'),
       })
     ),
   });

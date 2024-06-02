@@ -1,3 +1,4 @@
+import Icon from '@/components/Icon';
 import {
   Box,
   Collapse,
@@ -9,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { BiCollapse } from 'react-icons/bi';
 import { MdSearch } from 'react-icons/md';
-import Icon from '../Icon';
 
 export function SearchButton({ isOpen, onToggle }: UseDisclosureReturn) {
   return (

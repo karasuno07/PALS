@@ -1,5 +1,5 @@
-import GroupList from '@/components/GroupList';
-import EmptyData from '@/components/GroupList/EmptyData';
+import EmptyData from '@/features/welcome/components/EmptyData';
+import GroupList from '@/features/welcome/components/GroupList';
 import { GroupResponse } from '@/models/Group';
 import { api } from '@/shared/api';
 import { getUserFromToken } from '@/shared/token';

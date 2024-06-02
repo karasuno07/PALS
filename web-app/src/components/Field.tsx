@@ -5,6 +5,12 @@ import {
   InputGroup,
   InputProps,
   InputRightElement,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput as NumberInputContainer,
+  NumberInputField,
+  NumberInputFieldProps,
+  NumberInputStepper,
   forwardRef,
 } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -67,11 +73,38 @@ export const PasswordInput = forwardRef<Omit<InputProps, 'type'>, 'input'>(
 
     return (
       <InputGroup>
-        <Input type={show ? 'text' : 'password'} {...props} />
+        <Input ref={ref} type={show ? 'text' : 'password'} {...props} />
         <InputRightElement cursor='pointer'>
           <ToggleIcon size={16} onClick={onToggleShowHandler} />
         </InputRightElement>
       </InputGroup>
+    );
+  }
+);
+
+type CurrencyInputProps = Omit<
+  NumberInputFieldProps,
+  'type' | 'min' | 'step' | 'defaultValue'
+> & {
+  min?: number;
+  step?: number;
+  defaultValue?: number;
+  currency: string;
+};
+
+export const NumberInput = forwardRef<CurrencyInputProps, 'input'>(
+  function CurrencyInput(
+    { min, step, currency, defaultValue = 0, ...props },
+    ref
+  ) {
+    return (
+      <NumberInputContainer allowMouseWheel min={min} step={step}>
+        <NumberInputField ref={ref} {...props} />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInputContainer>
     );
   }
 );

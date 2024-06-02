@@ -1,5 +1,5 @@
-import LoginForm from '@/components/LoginForm';
-import OAuth2SignIn from '@/components/OAuth2SignIn';
+import LoginForm from '@/features/auth/components/LoginForm';
+import OAuth2SignIn from '@/features/auth/components/OAuth2SignIn';
 import {
   AbsoluteCenter,
   Box,

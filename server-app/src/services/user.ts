@@ -1,5 +1,6 @@
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { ObjectId } from 'mongoose';
 import { HttpClientError } from '../errors';
 import User, { UserRequest } from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
@@ -24,6 +25,16 @@ const UserService = {
       });
     }
     return user;
+  },
+  async findAllByIds(ids: ObjectId[]) {
+    return await User.find(
+      {
+        _id: {
+          $in: ids,
+        },
+      },
+      { password: 0 }
+    );
   },
   async create(user: UserRequest) {
     const hashedPassword = await hash(user.password, 10);

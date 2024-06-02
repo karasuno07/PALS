@@ -1,16 +1,15 @@
+import TabSelector from '@/features/groups/components/TabSelector';
+import {
+  AddExpense,
+  Balances,
+  Dashboard,
+  ExpensesHistory,
+  Greetings,
+} from '@/features/groups/components/tabs';
 import { headerStyles } from '@/layouts/Header';
 import { GroupResponse } from '@/models/Group';
 import { api } from '@/shared/api';
-import {
-  Box,
-  HStack,
-  Heading,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from '@chakra-ui/react';
+import { Box, HStack, Heading, TabPanels, Tabs } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
 
 const styles = {
@@ -28,16 +27,14 @@ type Props = {
   };
 };
 
-
-
 export default async function GroupHome({ params: { id } }: Props) {
   const response = await api<GroupResponse>(`/groups/${id}`);
 
   if (response.success) {
-    const details = response.data;
+    const info = response.data as GroupResponse;
 
     return (
-      <Tabs as='nav' variant='soft-rounded' colorScheme='red'>
+      <Tabs isLazy as='nav' variant='soft-rounded' colorScheme='red'>
         <HStack alignItems='flex-start'>
           <Box minWidth='200px'>
             <Heading
@@ -46,14 +43,9 @@ export default async function GroupHome({ params: { id } }: Props) {
               height='50px'
               color='green.700'
             >
-              {details.name}
+              {info.name}
             </Heading>
-            <TabList display='flex' flexDirection='column' gap={4}>
-              <Tab>Dashboard</Tab>
-              <Tab>Balances</Tab>
-              <Tab>Add Expense</Tab>
-              <Tab>Expenses History</Tab>
-            </TabList>
+            <TabSelector />
           </Box>
           <Box w='100%'>
             <TabPanels
@@ -62,10 +54,11 @@ export default async function GroupHome({ params: { id } }: Props) {
               width='100%'
               minHeight={`calc(100lvh - ${headerStyles.container.height} - ${styles.tabs.paddingTop} - ${styles.tabs.paddingBottom})`}
             >
-              <TabPanel>Dashboard</TabPanel>
-              <TabPanel>Balances</TabPanel>
-              <TabPanel>Add Expense</TabPanel>
-              <TabPanel>Expenses History</TabPanel>
+              <Greetings />
+              <Dashboard />
+              <Balances />
+              <AddExpense groupId={info._id} />
+              <ExpensesHistory />
             </TabPanels>
           </Box>
         </HStack>
@@ -74,6 +67,4 @@ export default async function GroupHome({ params: { id } }: Props) {
   } else {
     redirect('/');
   }
-
-  
 }

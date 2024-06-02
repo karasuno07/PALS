@@ -1,5 +1,8 @@
 'use client';
 
+import { FormField, PasswordInput } from '@/components/Field';
+import Link from '@/components/Link';
+import SubmitButton from '@/components/SubmitButton';
 import {
   Box,
   Flex,
@@ -14,32 +17,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FormField, PasswordInput } from '../Field';
-import SubmitButton from '../SubmitButton';
-import { onRegister } from './formAction';
-import { RegisterValidationSchema } from './formSchema';
+import { onLogin } from './formAction';
+import { LoginValidationSchema } from './formSchema';
 
-type Props = {};
-
-export default function RegisterForm({}: Props) {
+export default function LoginForm() {
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [state, formAction] = useFormState(onRegister, {
+  const [state, formAction] = useFormState(onLogin, {
     success: null,
     message: '',
   });
 
   const formMethods = useForm({
-    mode: 'onChange',
+    mode: 'onSubmit',
+    resolver: zodResolver(LoginValidationSchema),
     defaultValues: {
       username: '',
       password: '',
-      confirmPassword: '',
-      name: '',
-      email: '',
       ...(state.fields ?? {}),
     },
-    resolver: zodResolver(RegisterValidationSchema),
   });
 
   const toast = useToast({
@@ -49,12 +45,13 @@ export default function RegisterForm({}: Props) {
   useEffect(() => {
     if (!state.success && state.message.length > 0) {
       toast({
-        title: 'Register Failed',
+        title: 'Login Failed',
         description: state.message,
         status: 'error',
         isClosable: true,
         duration: 1000,
       });
+      formMethods.reset({ password: '' });
     }
     return () => {
       toast.closeAll();
@@ -75,9 +72,9 @@ export default function RegisterForm({}: Props) {
         action={formAction}
         onSubmit={(evt: any) => {
           evt.preventDefault();
-          formMethods.handleSubmit(() => {
-            formAction(new FormData(formRef.current!));
-          })(evt);
+          formMethods.handleSubmit(() =>
+            formAction(new FormData(formRef.current!))
+          )(evt);
         }}
       >
         <Flex flexDirection='column' gap='10px' width='300px'>
@@ -113,60 +110,21 @@ export default function RegisterForm({}: Props) {
               );
             }}
           </FormField>
-          <FormField name='confirmPassword'>
-            {({ field, fieldState }) => {
-              const isError = fieldState.isDirty && !!fieldState.error;
-              return (
-                <FormControl isInvalid={isError}>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <PasswordInput id='confirm-password' {...field} />
-                  {isError && (
-                    <FormErrorMessage>
-                      {fieldState.error?.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-              );
-            }}
-          </FormField>
-          <FormField name='name'>
-            {({ field, fieldState }) => {
-              const isError = fieldState.isDirty && !!fieldState.error;
-              return (
-                <FormControl isInvalid={isError}>
-                  <FormLabel>Full Name</FormLabel>
-                  <Input id='name' {...field} />
-                  {isError && (
-                    <FormErrorMessage>
-                      {fieldState.error?.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-              );
-            }}
-          </FormField>
-          <FormField name='email'>
-            {({ field, fieldState }) => {
-              const isError = fieldState.isDirty && !!fieldState.error;
-              return (
-                <FormControl isInvalid={isError}>
-                  <FormLabel>Email Address</FormLabel>
-                  <Input id='email' {...field} />
-                  {isError && (
-                    <FormErrorMessage>
-                      {fieldState.error?.message}
-                    </FormErrorMessage>
-                  )}
-                </FormControl>
-              );
-            }}
-          </FormField>
+          <Flex fontSize={14} flexDirection='row-reverse'>
+            <Link
+              href='/register'
+              color='blue'
+              _hover={{ textDecoration: 'underline' }}
+            >
+              Register
+            </Link>
+          </Flex>
           <Spacer />
           <SubmitButton
             isLoading={isFormSubmitting}
             isDisabled={formHasError || isFormSubmitting}
           >
-            Create account
+            Login
           </SubmitButton>
         </Flex>
       </Box>

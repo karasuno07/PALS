@@ -1,4 +1,4 @@
-import RegisterForm from '@/components/RegisterForm';
+import RegisterForm from '@/features/auth/components/RegisterForm';
 import { AbsoluteCenter, Card, CardBody, CardHeader } from '@chakra-ui/react';
 import Image from 'next/image';
 

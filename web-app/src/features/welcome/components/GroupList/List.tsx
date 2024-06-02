@@ -1,3 +1,5 @@
+import Icon from '@/components/Icon';
+import Link from '@/components/Link';
 import Group from '@/models/Group';
 import { api } from '@/shared/api';
 import {
@@ -21,8 +23,6 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 import { MdClose } from 'react-icons/md';
-import Icon from '../Icon';
-import Link from '../Link';
 
 type Props = {
   groups: Group[];

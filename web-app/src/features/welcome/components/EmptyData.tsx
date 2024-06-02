@@ -3,7 +3,7 @@
 import Icon from '@/components/Icon';
 import { AbsoluteCenter, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import { MdOutlineAdd, MdSearch } from 'react-icons/md';
-import GroupModal from './Modal';
+import GroupModal from './GroupList/Modal';
 
 type Props = {};
 

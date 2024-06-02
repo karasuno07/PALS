@@ -18,10 +18,10 @@ export const GroupValidator = {
     body('name', 'Group name is required').notEmpty(),
     body(
       'name',
-      'Group name must be between 3 and 10 characters long'
+      'Group name must be between 3 and 20 characters long'
     ).isLength({
       min: 3,
-      max: 10,
+      max: 20,
     }),
     body('description', 'Group description is required').notEmpty(),
   ],
