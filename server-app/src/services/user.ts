@@ -1,11 +1,29 @@
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { HttpClientError } from '../errors';
 import User, { UserRequest } from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
 
 const UserService = {
+  async findById(userId: string) {
+    const user = await User.findById(userId, { password: 0 });
+    if (!user) {
+      throw new HttpClientError({
+        name: 'Resource Not Found',
+        message: `Not found any user with id ${userId}`,
+      });
+    }
+    return user;
+  },
   async findByUsername(username: string) {
-    return await User.findOne({ username }, { password: 0 });
+    const user = await User.findOne({ username }, { password: 0 });
+    if (!user) {
+      throw new HttpClientError({
+        name: 'Resource Not Found',
+        message: `Not found any user with username ${username}`,
+      });
+    }
+    return user;
   },
   async create(user: UserRequest) {
     const hashedPassword = await hash(user.password, 10);

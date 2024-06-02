@@ -1,5 +1,6 @@
 import { compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { Request } from 'express';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { HttpClientError } from '../errors';
 import User from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
@@ -26,7 +27,7 @@ const AuthService = {
 
     const jwt = sign(
       {
-        id: user._id,
+        userId: user._id,
         username: user.username,
       },
       ACCESS_TOKEN_SECRET,
@@ -34,6 +35,15 @@ const AuthService = {
     );
 
     return jwt;
+  },
+  async getTokenPayload(req: Request) {
+    const tokenPrefix = 'Bearer ';
+    const authorizationHeader = req.headers.authorization!;
+    const token = authorizationHeader.substring(tokenPrefix.length);
+
+    const payload = verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
+
+    return payload;
   },
 };
 

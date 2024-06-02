@@ -1,9 +1,10 @@
 import { Request, Response, Router } from 'express';
 import { TokenResponse } from '../models/auth';
-import { UserAuth, UserRequest, UserValidator } from '../models/user';
+import { UserAuth, UserRequest } from '../models/user';
 import AuthService from '../services/auth';
 import UserService from '../services/user';
 import { validationHandler } from '../shared/api';
+import { UserValidator } from '../shared/validator';
 
 const router = Router();
 

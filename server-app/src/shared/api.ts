@@ -11,12 +11,12 @@ export async function validationHandler(
   res: Response,
   next: Function
 ) {
-  const errorResult = validationResult(req);
-  if (errorResult.isEmpty()) {
+  const errorResults = validationResult(req);
+  if (errorResults.isEmpty()) {
     return next();
   }
 
-  const errors = errorResult
+  const errors = errorResults
     .formatWith((err: any) => {
       return {
         field: err.path,
@@ -25,12 +25,13 @@ export async function validationHandler(
     })
     .array();
 
-  return res.status(400).json({
-    error: {
-      name: 'Validation Error',
-      message: errors[0].message,
-    },
-  });
+  const error = {
+    name: 'Validation Error',
+    message: errors[0].message,
+  };
+  console.error('Validation Error:', errors[0].message);
+
+  return res.status(400).json({ error });
 }
 
 export function logger(req: Request, res: Response, next: Function) {

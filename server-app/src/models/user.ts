@@ -1,6 +1,4 @@
-import { body, param } from 'express-validator';
 import { Schema, model } from 'mongoose';
-import { HttpClientError } from '../errors';
 
 const userSchema = new Schema({
   username: {
@@ -17,6 +15,7 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
+    unique: true,
   },
   emailVerified: {
     type: Date,
@@ -24,49 +23,15 @@ const userSchema = new Schema({
   image: {
     type: String,
   },
+  groups: [
+    {
+      groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
+      groupName: String,
+    },
+  ],
 });
 
 const User = model('User', userSchema);
-
-export const UserValidator = {
-  findByUsername: [
-    param('username', 'Username is required for searching').notEmpty(),
-  ],
-  authenticate: [
-    body('username', 'Username is required').notEmpty(),
-    body(
-      'username',
-      'Username must be betweem 6 and 20 characters length'
-    ).isLength({ min: 6, max: 20 }),
-    body('password', 'Password is required').notEmpty(),
-    body(
-      'password',
-      'Password must be between 6 and 50 characters length'
-    ).isLength({ min: 6, max: 20 }),
-  ],
-  create: [
-    body('username', 'Username already in use').custom(async (username) => {
-      const existingUser = await User.findOne({ username });
-      if (existingUser) {
-        throw new HttpClientError({
-          name: 'Validation Error',
-          message: 'Group name already in use',
-        });
-      }
-    }),
-    body('username', 'Username is required').notEmpty(),
-    body(
-      'username',
-      'Username must be betweem 6 and 20 characters length'
-    ).isLength({ min: 6, max: 20 }),
-    body('password', 'Password is required').notEmpty(),
-    body(
-      'password',
-      'Password must be between 6 and 50 characters length'
-    ).isLength({ min: 6, max: 20 }),
-    body('name', 'Name is required').notEmpty(),
-  ],
-};
 
 export type UserAuth = {
   username: string;

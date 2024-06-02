@@ -1,7 +1,9 @@
 import { Request, Response, Router } from 'express';
-import Group, { GroupValidator } from '../models/group';
+import Group from '../models/group';
+import AuthService from '../services/auth';
 import GroupService from '../services/group';
 import { validationHandler } from '../shared/api';
+import { GroupValidator } from '../shared/validator';
 
 const router = Router();
 
@@ -34,10 +36,25 @@ router.post(
   validationHandler,
   async (req: Request, res: Response) => {
     const { name, description } = req.body;
+    const tokenPayload = await AuthService.getTokenPayload(req);
 
-    const createdGroup = await GroupService.create({ name, description });
+    const createdGroup = await GroupService.create({
+      name,
+      description,
+      createBy: tokenPayload.userId,
+    });
 
     return res.status(201).json(createdGroup);
+  }
+);
+
+router.post(
+  '/:groupId/addUser',
+  GroupValidator.addUser,
+  validationHandler,
+  async (req: Request, res: Response) => {
+    const { groupId } = req.params;
+    const { email } = req.body;
   }
 );
 

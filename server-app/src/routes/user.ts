@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { UserValidator } from '../models/user';
 import UserService from '../services/user';
 import { validationHandler } from '../shared/api';
+import { UserValidator } from '../shared/validator';
 
 const router = Router();
 
@@ -17,6 +17,5 @@ router.get(
     return res.status(200).json(user);
   }
 );
-
 
 export default router;

@@ -1,6 +1,4 @@
-import { body, param } from 'express-validator';
 import { Schema, model } from 'mongoose';
-import { HttpClientError } from '../errors';
 
 const groupSchema = new Schema({
   name: { type: String, required: true, unique: true },
@@ -12,6 +10,9 @@ const groupSchema = new Schema({
     {
       memberId: { type: Schema.Types.ObjectId, ref: 'User' },
       memberBalance: Number,
+      isAdmin: {
+        type: Schema.Types.Boolean,
+      },
     },
   ],
   expenses: [
@@ -30,33 +31,5 @@ const groupSchema = new Schema({
 });
 
 const Group = model('Group', groupSchema);
-
-export const GroupValidator = {
-  create: [
-    body('name', 'Group name already in use').custom(async (name) => {
-      const existingGroup = await Group.findOne({ name });
-      if (existingGroup) {
-        throw new HttpClientError({
-          status: 400,
-          name: 'Validation Error',
-          message: 'Group name already in use',
-        });
-      }
-    }),
-    body('name', 'Group name is required').notEmpty(),
-    body(
-      'name',
-      'Group name must be between 3 and 10 characters long'
-    ).isLength({
-      min: 3,
-      max: 10,
-    }),
-    body('description', 'Group description is required').notEmpty(),
-  ],
-  findById: [
-    param('groupId', 'Group Id is required for searching by Id').notEmpty(),
-  ],
-  delete: [param('groupId', 'Group Id is required for deletion').notEmpty()],
-};
 
 export default Group;
