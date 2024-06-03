@@ -41,11 +41,19 @@ export function logger(req: Request, res: Response, next: Function) {
 export function jwtInterceptor(req: Request, res: Response, next: Function) {
   const { url, headers } = req;
   const tokenPrefix = 'Bearer ';
-  const publicRoutes = ['/api/authenticate', '/api/register'];
+  const publicRoutes = [
+    '/',
+    '/api-docs/',
+    '/api/authenticate',
+    '/api/register',
+  ];
 
-  if (!publicRoutes.includes(url)) {
+  if (!publicRoutes.some((route) => url.startsWith(route))) {
     const authorizationHeader = headers.authorization;
     if (!authorizationHeader) {
+      console.error(
+        `Request ${req.url} has been blocked by not providing sufficient authorization credentials`
+      );
       res.status(403).json({
         error: {
           name: 'Access Denied',

@@ -2,6 +2,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
+import { serve, setup } from 'swagger-ui-express';
+import apiDocs from './api-docs';
 import GroupRouter from './routes/group';
 import PublicRouter from './routes/public';
 import UserRouter from './routes/user';
@@ -20,10 +22,20 @@ app.use(jwtInterceptor);
 mongoose.connect(process.env.DATABASE_URL || '', {});
 
 app.get('/', async (req: Request, res: Response) => {
-  return res.send('Express + TypeScript Server');
+  return res.redirect('/api-docs');
 });
 
 app.use('/api', PublicRouter);
+app.use(
+  '/api-docs',
+  serve,
+  setup(apiDocs, {
+    explorer: true,
+    swaggerOptions: {
+      // url: 'http://petstore.swagger.io/v2/swagger.json',
+    },
+  })
+);
 app.use('/api/groups', GroupRouter);
 app.use('/api/users', UserRouter);
 
