@@ -1,7 +1,9 @@
 'use client';
 
 import { FormField, NumberInput } from '@/components/Field';
+import MultiSelect from '@/components/MultiSelect';
 import SubmitButton from '@/components/SubmitButton';
+import { EXPENSE_CATEGORIES } from '@/features/groups/constants';
 import User, { GroupMember } from '@/models/User';
 import {
   Flex,
@@ -15,7 +17,6 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
-import { Select as MultiSelect } from 'chakra-react-select';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import SplitTypeSelector from './SplitTypeSelector';
@@ -49,7 +50,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
 
   return (
     <FormProvider {...formMethods}>
-      <VStack paddingTop='100px'>
+      <VStack paddingTop='50px' minHeight='65lvh'>
         <HStack
           as='form'
           justifyContent='center'
@@ -72,6 +73,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       id='expense-name'
                       backgroundColor='white'
                       {...field}
+                      placeholder='Enter expense name...'
                     />
                   </FormControl>
                 );
@@ -101,13 +103,25 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                     <FormLabel fontWeight='600'>
                       Please select expense category:
                     </FormLabel>
-                    <Select
+                    <MultiSelect
+                      isMulti={false}
                       id='expense-category'
-                      backgroundColor='white'
+                      chakraStyles={{
+                        groupHeading(base, state) {
+                          return { ...base, fontSize: '18px' };
+                        },
+                      }}
                       {...field}
-                    >
-                      <option value={1}>Default</option>
-                    </Select>
+                      options={EXPENSE_CATEGORIES.map((group) => {
+                        return {
+                          label: group.title,
+                          options: group.categories.map((category) => ({
+                            label: category,
+                            value: category,
+                          })),
+                        };
+                      })}
+                    />
                   </FormControl>
                 );
               }}
@@ -190,14 +204,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                     <FormLabel fontWeight='600'>Participants</FormLabel>
                     <MultiSelect
                       isMulti
-                      instanceId='expense-participants'
                       id='expense-participants'
-                      useBasicStyles
-                      chakraStyles={{
-                        control(base, state) {
-                          return { ...base, backgroundColor: 'white' };
-                        },
-                      }}
                       {...field}
                       options={participants.map((participant) => ({
                         label: participant.name,
@@ -212,9 +219,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
           </Flex>
         </HStack>
         <Spacer />
-        <SubmitButton marginTop='100px' colorScheme='green'>
-          Add Expense
-        </SubmitButton>
+        <SubmitButton colorScheme='green'>Add Expense</SubmitButton>
       </VStack>
     </FormProvider>
   );

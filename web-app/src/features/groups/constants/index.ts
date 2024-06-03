@@ -24,3 +24,54 @@ export const SPLIT_TYPES = [
   'By Shares',
   'By Percentages',
 ] as const;
+
+type ExpenseCategory = {
+  title: string;
+  categories: string[];
+};
+
+export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
+  {
+    title: 'Entertainment',
+    categories: ['Games', 'Movies', 'Music', 'Sports'],
+  },
+  { title: 'Food and drink', categories: ['Groceries', 'Dine out', 'Liquor'] },
+  {
+    title: 'Home',
+    categories: [
+      'Rent',
+      'Mortgage',
+      'Household supplies',
+      'Furniture',
+      'Maintenance',
+      'Pets',
+      'Services',
+      'Electronics',
+    ],
+  },
+  {
+    title: 'Transportation',
+    categories: [
+      'Parking',
+      'Car',
+      'Bus/train',
+      'Gas/fuel',
+      'Taxi',
+      'Bicycle',
+      'Hotel',
+      'Rental Vehicle',
+    ],
+  },
+  {
+    title: 'Utilities',
+    categories: [
+      'Electricity',
+      'Heat/gas',
+      'Water',
+      'TV/Phone/Internet',
+      'Trash',
+      'Cleaning',
+    ],
+  },
+  { title: 'Uncategorized', categories: ['Other'] },
+];
