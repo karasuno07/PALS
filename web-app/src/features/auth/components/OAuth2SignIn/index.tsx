@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Stack } from '@chakra-ui/react';
-import { FaGithub } from 'react-icons/fa6';
+import { FaFacebook, FaGithub } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
 
 export default function OAuth2SignIn() {
@@ -11,6 +11,14 @@ export default function OAuth2SignIn() {
 
   return (
     <Stack direction='column' gap={4}>
+      <Button
+        colorScheme='blue'
+        leftIcon={<FaFacebook size={24} />}
+        iconSpacing={5}
+        onClick={onOAuthSignInHandler}
+      >
+        Sign in with Facebook
+      </Button>
       <Button
         leftIcon={<FaGithub size={24} />}
         iconSpacing={5}

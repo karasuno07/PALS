@@ -6,6 +6,7 @@ import {
   ExpensesHistory,
   Greetings,
 } from '@/features/groups/components/tabs';
+import GroupManagement from '@/features/groups/components/tabs/Management';
 import { headerStyles } from '@/layouts/Header';
 import { GroupResponse } from '@/models/Group';
 import { api } from '@/shared/api';
@@ -39,7 +40,8 @@ export default async function GroupHome({ params: { id } }: Props) {
           <Box minWidth='200px'>
             <Heading
               textAlign='center'
-              size='lg'
+              size='md'
+              fontSize='24px'
               height='50px'
               color='green.700'
             >
@@ -59,6 +61,7 @@ export default async function GroupHome({ params: { id } }: Props) {
               <Balances />
               <AddExpense groupId={info._id} />
               <ExpensesHistory />
+              <GroupManagement />
             </TabPanels>
           </Box>
         </HStack>

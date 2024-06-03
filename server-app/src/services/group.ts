@@ -87,7 +87,7 @@ const GroupService = {
   },
   async deleteById(groupId: string) {
     const group = await GroupService.findById(groupId);
-    await Group.findByIdAndDelete(group._id);
+    await group.deleteOne();
     console.log('Deleted group with id: ' + groupId);
   },
 };

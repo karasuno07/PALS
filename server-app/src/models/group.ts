@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
+import User from './user';
 
 const groupSchema = new Schema({
   name: { type: String, required: true, unique: true },
@@ -28,6 +29,17 @@ const groupSchema = new Schema({
       balance: Number,
     },
   ],
+});
+
+groupSchema.post('findOneAndDelete', async function (doc: Document | null) {
+  if (doc) {
+    await User.deleteMany({ groups_id: doc.id });
+  }
+});
+groupSchema.post('deleteOne', async function (doc: Document | null) {
+  if (doc) {
+    await User.deleteMany({ groups_id: doc.id });
+  }
 });
 
 const Group = model('Group', groupSchema);

@@ -17,15 +17,11 @@ import { useRef } from 'react';
 import { VscSignOut } from 'react-icons/vsc';
 import { signOutAction } from './signOutAction';
 
-type Props = {
-  show: boolean;
-};
 
-export default function SignOut({ show }: Props) {
+
+export default function SignOut() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
-
-  if (!show) return undefined;
 
   return (
     <>
@@ -53,7 +49,9 @@ export default function SignOut({ show }: Props) {
               <Button size='sm' variant='outline' onClick={onClose}>
                 Close
               </Button>
-              <SubmitButton size='sm'>Sign out</SubmitButton>
+              <SubmitButton size='sm' onClick={onClose}>
+                Sign out
+              </SubmitButton>
             </ButtonGroup>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -16,6 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Select as MultiSelect } from 'chakra-react-select';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import SplitTypeSelector from './SplitTypeSelector';
 
@@ -25,11 +26,26 @@ type Props = {
 };
 
 export default function AddExpenseForm({ currentUser, members }: Props) {
-  const isAdmin = members.find(
+  const isGroupAdmin = members.find(
     (member) => (member._id = currentUser._id)
   )?.isAdmin;
 
-  const formMethods = useForm();
+  const formMethods = useForm({
+    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      date: '',
+      category: '',
+      payer: currentUser._id,
+      amount: 0,
+      description: '',
+      paticipants: '',
+    },
+  });
+
+  const [participants, setParticipants] = useState<GroupMember[]>(
+    members.filter((member) => member._id !== currentUser._id)
+  );
 
   return (
     <FormProvider {...formMethods}>
@@ -99,6 +115,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
             <InputGroup zIndex={1} justifyContent='center' gap='20px'>
               <FormField name='payer'>
                 {({ field, fieldState }) => {
+                  const { onChange, ...fieldProps } = field;
                   const hasError = fieldState.isDirty && !!fieldState.error;
                   return (
                     <FormControl isInvalid={hasError} maxWidth='250px'>
@@ -106,14 +123,21 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       <Select
                         id='expense-payer'
                         backgroundColor='white'
-                        isDisabled={!isAdmin}
-                        {...field}
+                        isDisabled={!isGroupAdmin}
+                        onChange={(evt) => {
+                          const updatedParticipants = members.filter(
+                            (member) => member._id !== evt.target.value
+                          );
+                          setParticipants(updatedParticipants);
+                          formMethods.resetField('paticipants');
+                          field.onChange(evt);
+                        }}
+                        {...fieldProps}
                       >
                         {members.map((member) => (
                           <option
                             key={`payer-${member._id}`}
                             value={member._id}
-                            selected={member._id === currentUser._id}
                           >
                             {member.name}
                           </option>
@@ -175,12 +199,10 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                         },
                       }}
                       {...field}
-                      options={members
-                        .filter((member) => member._id !== currentUser._id)
-                        .map((member) => ({
-                          label: member.name,
-                          value: member._id,
-                        }))}
+                      options={participants.map((participant) => ({
+                        label: participant.name,
+                        value: participant._id,
+                      }))}
                     />
                   </FormControl>
                 );

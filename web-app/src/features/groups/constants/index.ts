@@ -14,6 +14,7 @@ export const TABS: Tab[] = [
   { id: 3, name: 'Balances', visibility: true },
   { id: 4, name: 'Add Expense', visibility: true },
   { id: 5, name: 'Expenses History', visibility: true },
+  { id: 6, name: 'Group Management', visibility: true },
 ];
 
 export const SPLIT_TYPES = [

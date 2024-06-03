@@ -1,12 +1,8 @@
 import Icon from '@/components/Icon';
 import Link from '@/components/Link';
-import { TOKEN_COOKIE_SECRET } from '@/constants';
 import SignOut from '@/features/auth/components/SignOut';
 import { Circle, Flex, Spacer } from '@chakra-ui/react';
-import { cookies } from 'next/headers';
 import { MdHome } from 'react-icons/md';
-
-type Props = {};
 
 export const headerStyles = {
   container: {
@@ -17,7 +13,7 @@ export const headerStyles = {
   },
 };
 
-export default function Header({}: Props) {
+export default function Header() {
   return (
     <Flex alignItems='center' {...headerStyles.container}>
       <Link href='/'>
@@ -26,7 +22,7 @@ export default function Header({}: Props) {
         </Circle>
       </Link>
       <Spacer />
-      <SignOut show={!!cookies().get(TOKEN_COOKIE_SECRET)?.value} />
+      <SignOut />
     </Flex>
   );
 }

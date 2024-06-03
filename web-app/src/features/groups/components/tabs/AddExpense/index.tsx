@@ -15,6 +15,20 @@ async function getGroupMembers(id: string) {
   if (!response.success) {
     return [];
   } else {
+    response.data.push({
+      _id: '123test',
+      username: 'user1test',
+      name: 'User Test 1',
+      balance: 10000,
+      isAdmin: false,
+    });
+    response.data.push({
+      _id: '312test',
+      username: 'user2test',
+      name: 'User Test 2',
+      balance: 0,
+      isAdmin: false,
+    });
     return response.data;
   }
 }
