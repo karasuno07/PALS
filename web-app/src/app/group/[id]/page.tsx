@@ -9,6 +9,7 @@ import {
 } from '@/features/groups/layouts';
 import { headerStyles } from '@/layouts/Header';
 import { GroupResponse } from '@/models/Group';
+import { GroupMember } from '@/models/User';
 import { api } from '@/shared/api';
 import { Box, HStack, Heading, TabPanels, Tabs } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
@@ -28,11 +29,36 @@ type Props = {
   };
 };
 
+async function getGroupMembers(id: string) {
+  const response = await api<GroupMember[]>(`/groups/${id}/members`);
+
+  if (!response.success) {
+    return [];
+  } else {
+    response.data.push({
+      _id: '123test',
+      username: 'user1test',
+      name: 'User Test 1',
+      balance: 10000,
+      isAdmin: false,
+    });
+    response.data.push({
+      _id: '312test',
+      username: 'user2test',
+      name: 'User Test 2',
+      balance: 0,
+      isAdmin: false,
+    });
+    return response.data;
+  }
+}
+
 export default async function GroupHome({ params: { id } }: Props) {
   const response = await api<GroupResponse>(`/groups/${id}`);
 
   if (response.success) {
     const info = response.data as GroupResponse;
+    const members = await getGroupMembers(id);
 
     return (
       <Tabs isLazy as='nav' variant='soft-rounded' colorScheme='red'>
@@ -59,9 +85,9 @@ export default async function GroupHome({ params: { id } }: Props) {
               <Greetings />
               <Dashboard />
               <Balances />
-              <AddExpense groupId={info._id} />
+              <AddExpense groupMembers={members} />
               <ExpensesHistory />
-              <GroupManagement />
+              <GroupManagement groupInfo={info} groupMembers={members} />
             </TabPanels>
           </Box>
         </HStack>

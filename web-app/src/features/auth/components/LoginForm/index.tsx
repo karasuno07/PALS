@@ -29,7 +29,7 @@ export default function LoginForm() {
   });
 
   const formMethods = useForm({
-    mode: 'onSubmit',
+    mode: 'onChange',
     resolver: zodResolver(LoginValidationSchema),
     defaultValues: {
       username: '',

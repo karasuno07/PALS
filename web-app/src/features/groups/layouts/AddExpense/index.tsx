@@ -6,7 +6,7 @@ import { Heading } from '@chakra-ui/react';
 import AddExpenseForm from './AddExpenseForm';
 
 type Props = {
-  groupId: string;
+  groupMembers: GroupMember[];
 };
 
 async function getGroupMembers(id: string) {
@@ -33,9 +33,8 @@ async function getGroupMembers(id: string) {
   }
 }
 
-export default async function AddExpense({ groupId }: Props) {
+export default async function AddExpense({ groupMembers }: Props) {
   const { userId, username } = await getUserFromToken();
-  const members = await getGroupMembers(groupId);
 
   return (
     <TabContentLayout tabIndex={3} tabName='Add Expense'>
@@ -47,7 +46,7 @@ export default async function AddExpense({ groupId }: Props) {
           _id: userId,
           username: username,
         }}
-        members={members}
+        members={groupMembers}
       />
     </TabContentLayout>
   );

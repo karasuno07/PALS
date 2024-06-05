@@ -28,9 +28,9 @@ export const GroupValidator = {
   findById: [
     param('groupId', 'Group Id is required for searching by Id').notEmpty(),
   ],
-  addUser: [
+  addMember: [
     param('groupId', 'Group Id is required for adding user').notEmpty(),
-    body('email', 'User email address is required'),
+    body('invitationQuery', 'Username or email address is required'),
   ],
   delete: [param('groupId', 'Group Id is required for deletion').notEmpty()],
 };

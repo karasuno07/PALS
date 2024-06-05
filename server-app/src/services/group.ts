@@ -1,6 +1,8 @@
+import * as EmailValidator from 'email-validator';
 import { ObjectId, ProjectionType } from 'mongoose';
 import { HttpClientError } from '../errors';
 import Group from '../models/group';
+import User from '../models/user';
 import UserService from './user';
 
 const GroupService = {
@@ -84,6 +86,38 @@ const GroupService = {
     await group.save();
 
     return group;
+  },
+  async addMember(groupId: string, invitationQuery: string) {
+    const isEmail = EmailValidator.validate(invitationQuery);
+
+    const group = await GroupService.findById(groupId);
+    const userToInvite = isEmail
+      ? await User.findOne({ email: invitationQuery })
+      : await User.findOne({ username: invitationQuery });
+
+    if (!userToInvite) {
+      throw new HttpClientError({
+        status: 400,
+        name: 'Resources Not Found',
+        message: `Not found any user with username or email ${invitationQuery}`,
+      });
+    }
+
+    group.members.push({
+      memberId: userToInvite._id,
+      memberBalance: 0,
+      isAdmin: false,
+    });
+
+    userToInvite.groups.push({
+      id: group.id,
+      name: group.name,
+    });
+
+    group.save();
+    userToInvite?.save();
+
+    console.log('Add user to group successfully');
   },
   async deleteById(groupId: string) {
     const group = await GroupService.findById(groupId);

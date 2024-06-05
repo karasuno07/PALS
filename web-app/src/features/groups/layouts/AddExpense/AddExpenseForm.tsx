@@ -254,10 +254,8 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       {...field}
                       onChange={(evt) => {
                         const expenseAmount = formMethods.watch('amount');
-                        console.log(expenseAmount);
-
                         if (expenseAmount == 0) {
-                          console.log(false);
+                          // TODO:
                         } else {
                           field.onChange(evt);
                         }

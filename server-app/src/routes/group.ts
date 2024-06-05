@@ -69,12 +69,16 @@ router.post(
 );
 
 router.post(
-  '/:groupId/addUser',
-  GroupValidator.addUser,
+  '/:groupId/add-member',
+  GroupValidator.addMember,
   validationHandler,
   async (req: Request, res: Response) => {
     const { groupId } = req.params;
-    const { email } = req.body;
+    const { invitationQuery } = req.body;
+
+    await GroupService.addMember(groupId, invitationQuery);
+
+    return res.status(200).json(true);
   }
 );
 
