@@ -8,6 +8,7 @@ import User, { GroupMember } from '@/models/User';
 import {
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -19,6 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import ExpenseValues from './ExpenseValues';
 import SplitTypeSelector from './SplitTypeSelector';
 
 type Props = {
@@ -26,12 +28,22 @@ type Props = {
   members: GroupMember[];
 };
 
+type FormValues = {
+  name: string;
+  date: Date | string;
+  category: string;
+  payer: string;
+  amount: number;
+  description: string;
+  participants: GroupMember[];
+};
+
 export default function AddExpenseForm({ currentUser, members }: Props) {
   const isGroupAdmin = members.find(
     (member) => (member._id = currentUser._id)
   )?.isAdmin;
 
-  const formMethods = useForm({
+  const formMethods = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: {
       name: '',
@@ -40,17 +52,17 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
       payer: currentUser._id,
       amount: 0,
       description: '',
-      paticipants: '',
+      participants: [],
     },
   });
 
-  const [participants, setParticipants] = useState<GroupMember[]>(
+  const [participantOptions, setParticipantOptions] = useState<GroupMember[]>(
     members.filter((member) => member._id !== currentUser._id)
   );
 
   return (
     <FormProvider {...formMethods}>
-      <VStack paddingTop='50px' minHeight='65lvh'>
+      <VStack paddingTop='50px' minHeight='60lvh'>
         <HStack
           as='form'
           justifyContent='center'
@@ -75,6 +87,11 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       {...field}
                       placeholder='Enter expense name...'
                     />
+                    {hasError && (
+                      <FormErrorMessage>
+                        {fieldState.error?.message}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 );
               }}
@@ -91,6 +108,11 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       backgroundColor='white'
                       {...field}
                     />
+                    {hasError && (
+                      <FormErrorMessage>
+                        {fieldState.error?.message}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 );
               }}
@@ -107,11 +129,10 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       isMulti={false}
                       id='expense-category'
                       chakraStyles={{
-                        groupHeading(base, state) {
+                        groupHeading(base) {
                           return { ...base, fontSize: '18px' };
                         },
                       }}
-                      {...field}
                       options={EXPENSE_CATEGORIES.map((group) => {
                         return {
                           label: group.title,
@@ -121,7 +142,13 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                           })),
                         };
                       })}
+                      {...field}
                     />
+                    {hasError && (
+                      <FormErrorMessage>
+                        {fieldState.error?.message}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 );
               }}
@@ -142,8 +169,8 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                           const updatedParticipants = members.filter(
                             (member) => member._id !== evt.target.value
                           );
-                          setParticipants(updatedParticipants);
-                          formMethods.resetField('paticipants');
+                          setParticipantOptions(updatedParticipants);
+                          formMethods.resetField('participants');
                           field.onChange(evt);
                         }}
                         {...fieldProps}
@@ -157,6 +184,11 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                           </option>
                         ))}
                       </Select>
+                      {hasError && (
+                        <FormErrorMessage>
+                          {fieldState.error?.message}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   );
                 }}
@@ -174,6 +206,11 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                         backgroundColor='white'
                         {...field}
                       />
+                      {hasError && (
+                        <FormErrorMessage>
+                          {fieldState.error?.message}
+                        </FormErrorMessage>
+                      )}
                     </FormControl>
                   );
                 }}
@@ -190,32 +227,53 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       backgroundColor='white'
                       {...field}
                     />
+                    {hasError && (
+                      <FormErrorMessage>
+                        {fieldState.error?.message}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 );
               }}
             </FormField>
           </Flex>
           <Flex flexDirection='column' gap={5} maxWidth='470px'>
-            <FormField name='paticipants'>
+            <FormField name='participants'>
               {({ field, fieldState }) => {
                 const hasError = fieldState.isDirty && !!fieldState.error;
+
                 return (
                   <FormControl isInvalid={hasError}>
                     <FormLabel fontWeight='600'>Participants</FormLabel>
                     <MultiSelect
                       isMulti
                       id='expense-participants'
+                      options={participantOptions}
+                      getOptionLabel={(option: any) => option.name}
+                      getOptionValue={(option: any) => option._id}
                       {...field}
-                      options={participants.map((participant) => ({
-                        label: participant.name,
-                        value: participant._id,
-                      }))}
+                      onChange={(evt) => {
+                        const expenseAmount = formMethods.watch('amount');
+                        console.log(expenseAmount);
+
+                        if (expenseAmount == 0) {
+                          console.log(false);
+                        } else {
+                          field.onChange(evt);
+                        }
+                      }}
                     />
+                    {hasError && (
+                      <FormErrorMessage>
+                        {fieldState.error?.message}
+                      </FormErrorMessage>
+                    )}
                   </FormControl>
                 );
               }}
             </FormField>
             <SplitTypeSelector />
+            <ExpenseValues participants={formMethods.watch('participants')} />
           </Flex>
         </HStack>
         <Spacer />

@@ -90,15 +90,30 @@ type CurrencyInputProps = Omit<
   step?: number;
   defaultValue?: number;
   currency: string;
+  onMouseWheel?: (valueAsString: string, valueAsNumber: number) => void;
 };
 
 export const NumberInput = forwardRef<CurrencyInputProps, 'input'>(
   function CurrencyInput(
-    { min, step, currency, defaultValue = 0, ...props },
+    { min, step, currency, defaultValue = 0, onMouseWheel, ...props },
     ref
   ) {
+    const formContext = useFormContext();
+
     return (
-      <NumberInputContainer allowMouseWheel min={min} step={step}>
+      <NumberInputContainer
+        allowMouseWheel
+        min={min}
+        step={step}
+        onChange={(valueString, valueNumber) => {
+          if (formContext && props.name) {
+            formContext.setValue(props.name, valueString);
+          }
+          if (onMouseWheel) {
+            onMouseWheel(valueString, valueNumber);
+          }
+        }}
+      >
         <NumberInputField ref={ref} {...props} />
         <NumberInputStepper>
           <NumberIncrementStepper />

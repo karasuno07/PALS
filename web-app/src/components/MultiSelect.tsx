@@ -1,14 +1,13 @@
+import { forwardRef } from '@chakra-ui/react';
 import { Props, Select } from 'chakra-react-select';
 
-export default function MultiSelect({
-  id,
-  isMulti = true,
-  options,
-  chakraStyles,
-  ...props
-}: Props) {
+const MultiSelect = forwardRef<Props, 'select'>(function MultiSelect(
+  { id, isMulti = true, options, chakraStyles, ...props },
+  ref
+) {
   return (
     <Select
+      ref={ref}
       instanceId={id}
       id={id ? String(id) : undefined}
       isMulti={isMulti}
@@ -30,4 +29,6 @@ export default function MultiSelect({
       {...props}
     />
   );
-}
+});
+
+export default MultiSelect;

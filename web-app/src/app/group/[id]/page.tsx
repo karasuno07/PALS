@@ -5,8 +5,8 @@ import {
   Dashboard,
   ExpensesHistory,
   Greetings,
-} from '@/features/groups/components/tabs';
-import GroupManagement from '@/features/groups/components/tabs/Management';
+  GroupManagement,
+} from '@/features/groups/layouts';
 import { headerStyles } from '@/layouts/Header';
 import { GroupResponse } from '@/models/Group';
 import { api } from '@/shared/api';

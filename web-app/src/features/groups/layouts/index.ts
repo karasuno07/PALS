@@ -3,3 +3,4 @@ export { default as Balances } from './Balances';
 export { default as Dashboard } from './Dashboard';
 export { default as ExpensesHistory } from './ExpensesHistory';
 export { default as Greetings } from './Greetings';
+export { default as GroupManagement } from './Management';
