@@ -36,31 +36,37 @@ const GroupService = {
   },
   async getGroupMembers(groupId: string) {
     const group = await GroupService.findById(groupId);
-    const groupMembers = group.members;
-    const members = await UserService.findAllByIds(
-      groupMembers
-        .filter((mem) => mem.memberId != null)
-        .map((mem) => mem.memberId as unknown as ObjectId)
-    );
+    const groupMembers = group.members.filter((mem) => mem.memberId != null);
+
+    const memberIds = groupMembers.map(
+      (mem) => mem.memberId
+    ) as unknown as ObjectId[];
+    const members = await UserService.findAllByIds(memberIds);
 
     if (members.length === 0) {
       return members;
     }
 
-    return members.map((member) => {
-      const mappedGroupMember = groupMembers.find(
-        (groupMem) => (groupMem.memberId = member.id)
-      );
-      return {
-        _id: member._id,
-        username: member.username,
-        name: member.name,
-        email: member.email,
-        image: member.image,
-        balance: mappedGroupMember?.memberBalance || 0,
-        isAdmin: mappedGroupMember?.isAdmin,
-      };
-    });
+    const groupMemberMap = new Map(
+      groupMembers.map((member) => [member.memberId!.toString(), member])
+    );
+
+    return members
+      .map((member) => {
+        const groupMember = groupMemberMap.get(member.id);
+        if (groupMember) {
+          return {
+            _id: member._id,
+            username: member.username,
+            name: member.name,
+            email: member.email,
+            image: member.image,
+            balance: groupMember.memberBalance,
+            isAdmin: groupMember.isAdmin,
+          };
+        }
+      })
+      .filter(Boolean);
   },
   async create({
     name,
