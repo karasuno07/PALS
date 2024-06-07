@@ -27,7 +27,7 @@ export async function onLogin(
         cookies().set(TOKEN_COOKIE_SECRET, token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 60,
+          maxAge: 60 * 60 * 24,
         });
         redirect('/');
       }

@@ -31,7 +31,7 @@ const AuthService = {
         username: user.username,
       },
       ACCESS_TOKEN_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '24h' }
     );
 
     return jwt;

@@ -34,7 +34,7 @@ export async function validationHandler(
 }
 
 export function logger(req: Request, res: Response, next: Function) {
-  console.log(`Request ${req.url} has been called`);
+  console.log(`Request ${req.method.toUpperCase()} ${req.url} has been called`);
   next();
 }
 

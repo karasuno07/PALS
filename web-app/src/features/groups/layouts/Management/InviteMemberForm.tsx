@@ -1,6 +1,7 @@
 'use client';
 
 import { FormField } from '@/components/Field';
+import SubmitButton from '@/components/SubmitButton';
 import {
   Alert,
   AlertDescription,
@@ -21,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BsPersonFillAdd } from 'react-icons/bs';
@@ -52,28 +53,28 @@ export default function InviteMemberForm({ groupId }: Props) {
     resolver: zodResolver(AddMemberFormValidation),
   });
 
-  const onCloseFormHandler = () => {
+  const onCloseFormHandler = useCallback(() => {
     onClose();
+    setFormError(undefined);
     formMethods.reset();
-  };
+  }, [formMethods, onClose]);
 
   const onClearFormErrorHandler = () => setFormError(undefined);
 
   useEffect(() => {
     if (state.success) {
-      formMethods.reset();
-      router.refresh(); // TODO: keep on the same tab after close the modal
+      onCloseFormHandler(); // TODO: keep on the same tab after close the modal
     } else if (state.message.length > 0) {
       setFormError(state.message);
     }
-  }, [state.success, state.message, router, formMethods]);
+  }, [state.success, state.message, router, formMethods, onCloseFormHandler]);
 
   return (
-    <Box marginTop={10}>
-      <Button size='sm' variant='outline' colorScheme='yellow' onClick={onOpen}>
-        Invite people to group
+    <Box marginTop={8}>
+      <Button size='sm' colorScheme='green' onClick={onOpen}>
+        Invite More...
       </Button>
-      <Modal isOpen={isOpen} onClose={onCloseFormHandler}>
+      <Modal isCentered isOpen={isOpen} onClose={onCloseFormHandler}>
         <ModalOverlay />
         <FormProvider {...formMethods}>
           <ModalContent
@@ -125,13 +126,9 @@ export default function InviteMemberForm({ groupId }: Props) {
               <Button mr={3} onClick={onCloseFormHandler}>
                 Close
               </Button>
-              <Button
-                type='submit'
-                leftIcon={<BsPersonFillAdd />}
-                colorScheme='green'
-              >
+              <SubmitButton leftIcon={<BsPersonFillAdd />} colorScheme='green'>
                 Invite
-              </Button>
+              </SubmitButton>
             </ModalFooter>
           </ModalContent>
         </FormProvider>

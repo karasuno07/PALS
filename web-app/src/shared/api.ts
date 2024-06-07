@@ -38,7 +38,10 @@ export async function api<T = any>(
     };
   } else {
     const err = await response.json();
-    console.error('Error:', err);
+    console.error(
+      `Error on request ${init?.method?.toUpperCase() || 'GET'} ${input}`,
+      err
+    );
     return {
       success: false,
       error: {

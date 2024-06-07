@@ -3,11 +3,11 @@ import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { serve, setup } from 'swagger-ui-express';
-import apiDocs from './api-docs';
 import GroupRouter from './routes/group';
 import PublicRouter from './routes/public';
 import UserRouter from './routes/user';
 import { errorHandler, jwtInterceptor, logger } from './shared/api';
+import apiDocs from './shared/api-docs';
 
 dotenv.config();
 
