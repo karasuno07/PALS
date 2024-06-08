@@ -22,8 +22,8 @@ export default async function GroupManagement({
 
   return (
     <TabContentLayout tabIndex={4} tabName='Group Management'>
-      <GroupMembers members={groupMembers} />
-      <InviteMemberForm groupId={groupInfo._id} />
+      <GroupMembers currentUserId={userId} members={groupMembers} />
+      <InviteMemberForm currentUserId={userId} groupId={groupInfo._id} />
     </TabContentLayout>
   );
 }

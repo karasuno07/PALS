@@ -3,10 +3,11 @@ import { Avatar, Box, Heading, List, ListItem, Text } from '@chakra-ui/react';
 import { FaUserShield } from 'react-icons/fa6';
 
 type Props = {
+  currentUserId: string;
   members: GroupMember[];
 };
 
-export default function GroupMembers({ members }: Props) {
+export default function GroupMembers({ currentUserId, members }: Props) {
   return (
     <Box marginTop={20}>
       <Heading size='md' marginBottom={5}>
@@ -20,7 +21,7 @@ export default function GroupMembers({ members }: Props) {
             alignItems='center'
             gap='10px'
             marginY={2}
-            fontWeight={member.isAdmin ? 'bold' : undefined}
+            fontWeight={member._id === currentUserId ? 'bold' : undefined}
           >
             <Avatar name={member.name} src={member.image} />
             <Text display='flex' alignItems='center' gap='5px'>

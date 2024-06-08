@@ -4,6 +4,7 @@ import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { serve, setup } from 'swagger-ui-express';
 import GroupRouter from './routes/group';
+import InvitationRouter from './routes/invitation';
 import PublicRouter from './routes/public';
 import UserRouter from './routes/user';
 import { errorHandler, jwtInterceptor, logger } from './shared/api';
@@ -38,6 +39,7 @@ app.use(
 );
 app.use('/api/groups', GroupRouter);
 app.use('/api/users', UserRouter);
+app.use('/api/invitations', InvitationRouter);
 
 app.use(errorHandler);
 

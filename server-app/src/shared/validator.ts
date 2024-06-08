@@ -26,13 +26,13 @@ export const GroupValidator = {
     body('description', 'Group description is required').notEmpty(),
   ],
   findById: [
-    param('groupId', 'Group Id is required for searching by Id').notEmpty(),
+    param('groupId', 'Group ID is required for searching by Id').notEmpty(),
   ],
   addMember: [
-    param('groupId', 'Group Id is required for adding user').notEmpty(),
-    body('invitationQuery', 'Username or email address is required'),
+    param('groupId', 'Group ID is required for adding user').notEmpty(),
+    body('memberId', 'Member ID is required'),
   ],
-  delete: [param('groupId', 'Group Id is required for deletion').notEmpty()],
+  delete: [param('groupId', 'Group ID is required for deletion').notEmpty()],
 };
 
 export const UserValidator = {
@@ -81,5 +81,14 @@ export const UserValidator = {
       'Password must be between 6 and 50 characters length'
     ).isLength({ min: 6, max: 20 }),
     body('name', 'Name is required').notEmpty(),
+  ],
+};
+
+export const InvitationValidator = {
+  getUserInvitations: [param('userId', 'User Id is required').notEmpty()],
+  inviteToGroup: [
+    param('groupId', 'Group ID is required for invitation').notEmpty(),
+    body('senderId', 'Sender ID is required').notEmpty(),
+    body('recipientQuery', 'Recipient query is required').notEmpty(),
   ],
 };

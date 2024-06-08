@@ -14,7 +14,12 @@ router.get(
 
     const user = await UserService.findByUsername(username);
 
-    return res.status(200).json(user);
+    return res.status(200).json(
+      user.toObject({
+        flattenObjectIds: true,
+        versionKey: false,
+      })
+    );
   }
 );
 

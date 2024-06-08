@@ -5,7 +5,6 @@ import { JwtPayload, verify } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-
 export async function getUserFromToken() {
   const cookiesStore = cookies();
   const token = cookiesStore.get(TOKEN_COOKIE_SECRET)?.value;

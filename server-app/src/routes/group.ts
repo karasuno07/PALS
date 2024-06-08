@@ -27,11 +27,7 @@ router.get(
   async (req: Request, res: Response) => {
     const { groupId } = req.params;
 
-    const group = await GroupService.findById(groupId, {
-      expenses: 0,
-      members: 0,
-      balances: 0,
-    });
+    const group = await GroupService.findById(groupId);
 
     return res.status(200).json(group);
   }
@@ -74,9 +70,9 @@ router.post(
   validationHandler,
   async (req: Request, res: Response) => {
     const { groupId } = req.params;
-    const { invitationQuery } = req.body;
+    const { memberId } = req.body;
 
-    await GroupService.addMember(groupId, invitationQuery);
+    await GroupService.addMember(groupId, memberId);
 
     return res.status(200).json(true);
   }

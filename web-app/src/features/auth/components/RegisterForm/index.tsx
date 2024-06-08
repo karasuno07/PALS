@@ -55,6 +55,7 @@ export default function RegisterForm({}: Props) {
         isClosable: true,
         duration: 1000,
       });
+      formMethods.reset({ password: '', confirmPassword: '' });
     }
     return () => {
       toast.closeAll();

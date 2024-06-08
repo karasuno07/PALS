@@ -1,9 +1,10 @@
-import * as EmailValidator from 'email-validator';
-import { ObjectId, ProjectionType } from 'mongoose';
+import { ProjectionType } from 'mongoose';
 import { HttpClientError } from '../errors';
 import Group from '../models/group';
 import User from '../models/user';
-import UserService from './user';
+import UserService, { DEFAULT_USER_PROJECTION } from './user';
+
+export const DEFAULT_GROUP_PROJECTION = { name: 1, description: 1 };
 
 const GroupService = {
   async search(searchParams: { userId?: string }, page: number, limit: number) {
@@ -16,7 +17,10 @@ const GroupService = {
 
     if (userId) {
       const user = await UserService.findById(userId);
-      const groups = Group.find({ 'members.memberId': user._id });
+      const groups = Group.find(
+        { 'members.memberId': user._id },
+        DEFAULT_GROUP_PROJECTION
+      );
 
       return groups;
     }
@@ -24,7 +28,10 @@ const GroupService = {
     return [];
   },
   async findById(groupId: string, projection?: ProjectionType<any>) {
-    const group = await Group.findById(groupId, projection);
+    const group = await Group.findById(
+      groupId,
+      projection || DEFAULT_GROUP_PROJECTION
+    );
     if (!group) {
       throw new HttpClientError({
         status: 400,
@@ -38,13 +45,18 @@ const GroupService = {
     const group = await GroupService.findById(groupId);
     const groupMembers = group.members.filter((mem) => mem.memberId != null);
 
-    const memberIds = groupMembers.map(
-      (mem) => mem.memberId
-    ) as unknown as ObjectId[];
-    const members = await UserService.findAllByIds(memberIds);
+    const memberIds = groupMembers.map((mem) => mem.memberId);
+    const members = await User.find(
+      {
+        _id: {
+          $in: memberIds,
+        },
+      },
+      DEFAULT_USER_PROJECTION
+    );
 
     if (members.length === 0) {
-      return members;
+      return [];
     }
 
     const groupMemberMap = new Map(
@@ -93,19 +105,15 @@ const GroupService = {
 
     return group;
   },
-  async addMember(groupId: string, invitationQuery: string) {
-    const isEmail = EmailValidator.validate(invitationQuery);
-
+  async addMember(groupId: string, memberId: string) {
     const group = await GroupService.findById(groupId);
-    const userToInvite = isEmail
-      ? await User.findOne({ email: invitationQuery })
-      : await User.findOne({ username: invitationQuery });
+    const userToInvite = await User.findById(memberId);
 
     if (!userToInvite) {
       throw new HttpClientError({
         status: 400,
         name: 'Resources Not Found',
-        message: `Not found any user with username or email ${invitationQuery}`,
+        message: `Not found any user with id ${memberId}`,
       });
     }
 
@@ -121,7 +129,7 @@ const GroupService = {
     });
 
     group.save();
-    userToInvite?.save();
+    userToInvite.save();
 
     console.log('Add user to group successfully');
   },

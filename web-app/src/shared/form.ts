@@ -24,7 +24,10 @@ export async function processForm(
   if (!parsed.success) {
     return {
       success: false,
-      message: 'Invalid form data',
+      message:
+        parsed.error.issues.length > 0
+          ? parsed.error.issues[0].message
+          : 'Invalid form data',
       fields,
       issues: parsed.error.issues.map((issue) => issue.message),
     };

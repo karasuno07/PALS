@@ -1,13 +1,20 @@
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
-import { ObjectId } from 'mongoose';
 import { HttpClientError } from '../errors';
 import User, { UserRequest } from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
 
+export const DEFAULT_USER_PROJECTION = {
+  name: 1,
+  username: 1,
+  email: 1,
+  emailVerified: 1,
+  image: 1,
+};
+
 const UserService = {
   async findById(userId: string) {
-    const user = await User.findById(userId, { password: 0 });
+    const user = await User.findById(userId, { password: 0, groups: 0 });
     if (!user) {
       throw new HttpClientError({
         name: 'Resource Not Found',
@@ -17,7 +24,7 @@ const UserService = {
     return user;
   },
   async findByUsername(username: string) {
-    const user = await User.findOne({ username }, { password: 0 });
+    const user = await User.findOne({ username }, { password: 0, groups: 0 });
     if (!user) {
       throw new HttpClientError({
         name: 'Resource Not Found',
@@ -26,15 +33,15 @@ const UserService = {
     }
     return user;
   },
-  async findAllByIds(ids: ObjectId[]) {
-    return await User.find(
-      {
-        _id: {
-          $in: ids,
-        },
-      },
-      { password: 0 }
-    );
+  async findByEmail(email: string) {
+    const user = await User.findOne({ email }, { password: 0, groups: 0 });
+    if (!user) {
+      throw new HttpClientError({
+        name: 'Resource Not Found',
+        message: `Not found any user with email ${email}`,
+      });
+    }
+    return user;
   },
   async create(user: UserRequest) {
     const hashedPassword = await hash(user.password, 10);

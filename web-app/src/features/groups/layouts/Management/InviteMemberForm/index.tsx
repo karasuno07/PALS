@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { FormProvider, useForm } from 'react-hook-form';
 import { BsPersonFillAdd } from 'react-icons/bs';
@@ -30,15 +30,15 @@ import { addMemberAction } from './addMemberAction';
 import AddMemberFormValidation from './addMemberSchema';
 
 type Props = {
+  currentUserId: string;
   groupId: string;
 };
 
-export default function InviteMemberForm({ groupId }: Props) {
+export default function InviteMemberForm({ currentUserId, groupId }: Props) {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formError, setFormError] = useState<string | undefined>();
 
-  const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction] = useFormState(addMemberAction, {
     success: null,
     message: '',
@@ -47,7 +47,7 @@ export default function InviteMemberForm({ groupId }: Props) {
   const formMethods = useForm({
     mode: 'onChange',
     defaultValues: {
-      invitationQuery: '',
+      recipientQuery: '',
       ...(state.fields ?? {}),
     },
     resolver: zodResolver(AddMemberFormValidation),
@@ -78,7 +78,6 @@ export default function InviteMemberForm({ groupId }: Props) {
         <ModalOverlay />
         <FormProvider {...formMethods}>
           <ModalContent
-            ref={formRef}
             as='form'
             action={formAction}
             onSubmit={(evt: any) => {
@@ -86,7 +85,8 @@ export default function InviteMemberForm({ groupId }: Props) {
               formMethods.handleSubmit((data) => {
                 const formData = new FormData();
                 formData.append('groupId', groupId);
-                formData.append('invitationQuery', data.invitationQuery);
+                formData.append('senderId', currentUserId);
+                formData.append('recipientQuery', data.recipientQuery);
                 formAction(formData);
               })(evt);
             }}
@@ -100,13 +100,13 @@ export default function InviteMemberForm({ groupId }: Props) {
               </Alert>
             )}
             <ModalBody>
-              <FormField name='invitationQuery'>
+              <FormField name='recipientQuery'>
                 {({ field, fieldState }) => {
                   const hasError = !!fieldState.error;
                   return (
                     <FormControl isInvalid={hasError}>
                       <Input
-                        id='invitation-query'
+                        id='recipient'
                         placeholder='Enter people email or username to invite them...'
                         {...field}
                         onFocus={onClearFormErrorHandler}

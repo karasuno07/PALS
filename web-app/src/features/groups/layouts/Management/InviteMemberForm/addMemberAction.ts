@@ -11,9 +11,12 @@ export async function addMemberAction(
     formData,
     AddMemberFormValidation,
     async ({ data, fields }: FormCallbackParams) => {
-      const response = await api(`/groups/${data!.groupId}/add-member`, {
+      const response = await api(`/invitations/${data!.groupId}/invite`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          senderId: data!.senderId,
+          recipientQuery: data!.recipientQuery,
+        }),
       });
 
       if (response.success) {
@@ -26,6 +29,7 @@ export async function addMemberAction(
       return {
         success: false,
         message: response.error.message,
+        fields,
       };
     }
   );
