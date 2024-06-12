@@ -4,13 +4,22 @@ import { GroupInvitation } from '@/models/Notification';
 import {
   Badge,
   Button,
+  ButtonGroup,
   Flex,
   Icon,
   Menu,
   MenuButton,
   MenuList,
+  Spacer,
+  Text,
 } from '@chakra-ui/react';
-import { MdNotifications } from 'react-icons/md';
+import {
+  MdClose,
+  MdDone,
+  MdInfo,
+  MdNotifications,
+  MdOutlineInfo,
+} from 'react-icons/md';
 
 type Props = {
   invitations: GroupInvitation[];
@@ -53,9 +62,64 @@ export default function InviteNotification({ invitations }: Props) {
                 <Flex
                   key={_id}
                   padding={1}
-                  flexDirection='column'
-                  alignItems='flex-start'
-                ></Flex>
+                  alignItems='center'
+                  color='blue.500'
+                  margin='5px 10px'
+                >
+                  <Icon as={MdInfo} boxSize={5} marginRight='5px' />
+                  <Text fontSize={12} fontWeight='bold'>
+                    Group Invitation
+                  </Text>
+                  <Spacer />
+                  <ButtonGroup
+                    display='flex'
+                    alignItems='center'
+                    marginLeft='10px'
+                  >
+                    <Button
+                      variant='unstyled'
+                      display='inline-flex'
+                      justifyContent='center'
+                      alignItems='center'
+                      minWidth='20px'
+                      width='20px'
+                      height='20px'
+                      _hover={{
+                        backgroundColor: '#dddfff80',
+                      }}
+                    >
+                      <Icon as={MdOutlineInfo} color='#000000' boxSize={5} />
+                    </Button>
+                    <Button
+                      variant='unstyled'
+                      display='inline-flex'
+                      justifyContent='center'
+                      alignItems='center'
+                      minWidth='20px'
+                      width='20px'
+                      height='20px'
+                      _hover={{
+                        backgroundColor: '#dddfff80',
+                      }}
+                    >
+                      <Icon as={MdClose} color='red' boxSize={5} />
+                    </Button>
+                    <Button
+                      variant='unstyled'
+                      display='inline-flex'
+                      justifyContent='center'
+                      alignItems='center'
+                      minWidth='20px'
+                      width='20px'
+                      height='20px'
+                      _hover={{
+                        backgroundColor: '#dddfff80',
+                      }}
+                    >
+                      <Icon as={MdDone} color='green' boxSize={5} />
+                    </Button>
+                  </ButtonGroup>
+                </Flex>
               ))}
             </MenuList>
           )}
