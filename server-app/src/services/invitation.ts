@@ -75,12 +75,13 @@ const InvitationService = {
     const existingInvitation = await Invitation.find({
       senderId,
       recipientId: recipient._id,
+      status: 'pending',
     });
     if (existingInvitation) {
       throw new HttpClientError({
         status: 400,
         name: 'Unique Resource Validation',
-        message: `There's already an invitation to user ${recipientQuery}`,
+        message: `There's already a pending invitation to user ${recipientQuery}`,
       });
     }
 
