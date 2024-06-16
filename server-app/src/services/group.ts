@@ -27,11 +27,11 @@ const GroupService = {
 
     return [];
   },
-  async findById(groupId: string, projection?: ProjectionType<any>) {
-    const group = await Group.findById(
-      groupId,
-      projection || DEFAULT_GROUP_PROJECTION
-    );
+  async findById(
+    groupId: string,
+    projection: ProjectionType<any> = DEFAULT_GROUP_PROJECTION
+  ) {
+    const group = await Group.findById(groupId, projection);
     if (!group) {
       throw new HttpClientError({
         status: 400,
@@ -42,7 +42,10 @@ const GroupService = {
     return group;
   },
   async getGroupMembers(groupId: string) {
-    const group = await GroupService.findById(groupId);
+    const group = await GroupService.findById(groupId, {
+      ...DEFAULT_GROUP_PROJECTION,
+      members: 1,
+    });
     const groupMembers = group.members.filter((mem) => mem.memberId != null);
 
     const memberIds = groupMembers.map((mem) => mem.memberId);
@@ -90,7 +93,10 @@ const GroupService = {
     createBy: string;
   }) {
     const group = new Group({ name, description });
-    const adminUser = await UserService.findById(createBy);
+    const adminUser = await UserService.findById(createBy, {
+      ...DEFAULT_USER_PROJECTION,
+      groups: 1,
+    });
 
     group.members.push({
       memberId: adminUser._id,
@@ -106,7 +112,10 @@ const GroupService = {
     return group;
   },
   async addMember(groupId: string, memberId: string) {
-    const group = await GroupService.findById(groupId);
+    const group = await GroupService.findById(groupId, {
+      ...DEFAULT_GROUP_PROJECTION,
+      members: 1,
+    });
     const userToInvite = await User.findById(memberId);
 
     if (!userToInvite) {
@@ -116,6 +125,8 @@ const GroupService = {
         message: `Not found any user with id ${memberId}`,
       });
     }
+
+    console.log(group);
 
     group.members.push({
       memberId: userToInvite._id,

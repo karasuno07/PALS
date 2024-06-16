@@ -91,4 +91,10 @@ export const InvitationValidator = {
     body('senderId', 'Sender ID is required').notEmpty(),
     body('recipientQuery', 'Recipient query is required').notEmpty(),
   ],
+  replyInvitation: [
+    param(
+      'invitationId',
+      'Invitation ID is required for acceptance'
+    ).notEmpty(),
+  ],
 };

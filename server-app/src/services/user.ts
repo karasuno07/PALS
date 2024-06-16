@@ -1,5 +1,6 @@
 import { hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import { ProjectionType } from 'mongoose';
 import { HttpClientError } from '../errors';
 import User, { UserRequest } from '../models/user';
 import { ACCESS_TOKEN_SECRET } from '../shared/api';
@@ -13,8 +14,11 @@ export const DEFAULT_USER_PROJECTION = {
 };
 
 const UserService = {
-  async findById(userId: string) {
-    const user = await User.findById(userId, { password: 0, groups: 0 });
+  async findById(
+    userId: string,
+    projection: ProjectionType<any> = DEFAULT_USER_PROJECTION
+  ) {
+    const user = await User.findById(userId, projection);
     if (!user) {
       throw new HttpClientError({
         name: 'Resource Not Found',
@@ -23,8 +27,11 @@ const UserService = {
     }
     return user;
   },
-  async findByUsername(username: string) {
-    const user = await User.findOne({ username }, { password: 0, groups: 0 });
+  async findByUsername(
+    username: string,
+    projection: ProjectionType<any> = DEFAULT_USER_PROJECTION
+  ) {
+    const user = await User.findOne({ username }, projection);
     if (!user) {
       throw new HttpClientError({
         name: 'Resource Not Found',
@@ -33,8 +40,11 @@ const UserService = {
     }
     return user;
   },
-  async findByEmail(email: string) {
-    const user = await User.findOne({ email }, { password: 0, groups: 0 });
+  async findByEmail(
+    email: string,
+    projection: ProjectionType<any> = DEFAULT_USER_PROJECTION
+  ) {
+    const user = await User.findOne({ email }, projection);
     if (!user) {
       throw new HttpClientError({
         name: 'Resource Not Found',

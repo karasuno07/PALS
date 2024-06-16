@@ -43,6 +43,15 @@ app.use('/api/invitations', InvitationRouter);
 
 app.use(errorHandler);
 
+app.use(function (req: Request, res: Response) {
+  return res.status(404).json({
+    error: {
+      name: 'Not Found',
+      message: 'Resource not found',
+    },
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

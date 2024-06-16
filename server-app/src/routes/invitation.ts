@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { InvitationRequest } from '../models/invitation';
+import AuthService from '../services/auth';
 import InvitationService from '../services/invitation';
 import { validationHandler } from '../shared/api';
 import { InvitationValidator } from '../shared/validator';
@@ -20,7 +21,7 @@ router.get(
 );
 
 router.post(
-  '/:groupId/invite',
+  '/invite/:groupId',
   InvitationValidator.inviteToGroup,
   validationHandler,
   async (req: Request, res: Response) => {
@@ -36,6 +37,39 @@ router.post(
     return res
       .status(200)
       .json(createdInvitation.toJSON({ flattenObjectIds: true }));
+  }
+);
+
+router.patch(
+  '/accept/:invitationId',
+  InvitationValidator.replyInvitation,
+  validationHandler,
+  async (req: Request, res: Response) => {
+    const { invitationId } = req.params;
+
+    const tokenPayload = await AuthService.getTokenPayload(req);
+
+    InvitationService.accept({
+      invitationId,
+      accepterId: tokenPayload.userId,
+    });
+
+    return res.status(200).json(true);
+  }
+);
+
+router.patch(
+  '/decline/:invitationId',
+  InvitationValidator.replyInvitation,
+  validationHandler,
+  async (req: Request, res: Response) => {
+    const { invitationId } = req.params;
+
+    InvitationService.decline({
+      invitationId,
+    });
+
+    return res.status(200).json(true);
   }
 );
 

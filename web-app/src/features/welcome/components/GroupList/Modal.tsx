@@ -21,7 +21,6 @@ import {
   InputRightAddon,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -47,7 +46,6 @@ export function SearchGroupModal(disclosureProps: UseDisclosureReturn) {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Group Search</ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
           <Box marginX='20px'>
             <InputGroup>
@@ -142,7 +140,6 @@ export function CreateGroupModal(disclosureProps: UseDisclosureReturn) {
           onSubmit={formMethods.handleSubmit(onCreateGroupHandler)}
         >
           <ModalHeader>Add new group</ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
             {formError && (
               <Alert status='error'>

@@ -16,10 +16,6 @@ export default async function GroupManagement({
 }: Props) {
   const { userId, username } = await getUserFromToken();
 
-  const isGroupAdmin = groupMembers.find(
-    (member) => (member._id = userId)
-  )?.isAdmin;
-
   return (
     <TabContentLayout tabIndex={4} tabName='Group Management'>
       <GroupMembers currentUserId={userId} members={groupMembers} />

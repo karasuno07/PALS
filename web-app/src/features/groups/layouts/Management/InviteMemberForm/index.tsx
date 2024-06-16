@@ -63,7 +63,7 @@ export default function InviteMemberForm({ currentUserId, groupId }: Props) {
 
   useEffect(() => {
     if (state.success) {
-      onCloseFormHandler(); // TODO: keep on the same tab after close the modal
+      onCloseFormHandler();
     } else if (state.message.length > 0) {
       setFormError(state.message);
     }

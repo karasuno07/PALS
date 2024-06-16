@@ -1,4 +1,5 @@
 import * as EmailValidator from 'email-validator';
+import { HttpClientError } from '../errors';
 import Invitation from '../models/invitation';
 import User from '../models/user';
 import GroupService from './group';
@@ -10,9 +11,28 @@ type InviteParams = {
   groupId: string;
 };
 
+type ReplyParams = {
+  invitationId: string;
+  accepterId: string;
+};
+
 const InvitationService = {
+  async findById(id: string) {
+    const invitation = await Invitation.findById(id);
+    if (!invitation) {
+      throw new HttpClientError({
+        status: 404,
+        name: 'Resource Not Found',
+        message: `Not found any invitation with id ${id}`,
+      });
+    }
+    return invitation;
+  },
   async getUserInvitations(userId: string) {
-    const invitatations = await Invitation.find({ recipientId: userId });
+    const invitatations = await Invitation.find({
+      recipientId: userId,
+      status: 'pending',
+    });
     invitatations;
 
     if (invitatations.length === 0) {
@@ -52,6 +72,18 @@ const InvitationService = {
       : await UserService.findByUsername(recipientQuery);
     const groupToInvite = await GroupService.findById(groupId);
 
+    const existingInvitation = await Invitation.find({
+      senderId,
+      recipientId: recipient._id,
+    });
+    if (existingInvitation) {
+      throw new HttpClientError({
+        status: 400,
+        name: 'Unique Resource Validation',
+        message: `There's already an invitation to user ${recipientQuery}`,
+      });
+    }
+
     const invitation = await Invitation.create({
       senderId: sender._id,
       recipientId: recipient._id,
@@ -62,6 +94,29 @@ const InvitationService = {
     });
 
     return invitation;
+  },
+  async accept({ invitationId, accepterId }: ReplyParams) {
+    const inivitation = await InvitationService.findById(invitationId);
+
+    await GroupService.addMember(
+      inivitation.invitedGroup!.id.toString(),
+      accepterId
+    );
+
+    inivitation.status = 'accepted';
+
+    await inivitation.save();
+
+    return inivitation;
+  },
+  async decline({ invitationId }: Omit<ReplyParams, 'accepterId'>) {
+    const inivitation = await InvitationService.findById(invitationId);
+
+    inivitation.status = 'declined';
+
+    await inivitation.save();
+
+    return inivitation;
   },
 };
 

@@ -11,7 +11,7 @@ export async function addMemberAction(
     formData,
     AddMemberFormValidation,
     async ({ data, fields }: FormCallbackParams) => {
-      const response = await api(`/invitations/${data!.groupId}/invite`, {
+      const response = await api(`/invitations/invite/${data!.groupId}`, {
         method: 'POST',
         body: JSON.stringify({
           senderId: data!.senderId,
