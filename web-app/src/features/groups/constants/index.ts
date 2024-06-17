@@ -17,6 +17,7 @@ export const TABS: Tab[] = [
   { id: 6, name: 'Group Management', visibility: true },
 ];
 
+export type SplitType = 'Equal Split' | 'Unequal Split' | 'By Lend';
 export const SPLIT_TYPES = ['Equal Split', 'Unequal Split', 'By Lend'] as const;
 
 type ExpenseCategory = {

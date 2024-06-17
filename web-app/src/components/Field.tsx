@@ -105,6 +105,7 @@ export const NumberInput = forwardRef<CurrencyInputProps, 'input'>(
         allowMouseWheel
         min={min}
         step={step}
+        value={(props.value as string) || 0}
         onChange={(valueString, valueNumber) => {
           if (formContext && props.name) {
             formContext.setValue(props.name, valueString);

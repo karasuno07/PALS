@@ -3,7 +3,7 @@
 import { FormField, NumberInput } from '@/components/Field';
 import MultiSelect from '@/components/MultiSelect';
 import SubmitButton from '@/components/SubmitButton';
-import { EXPENSE_CATEGORIES } from '@/features/groups/constants';
+import { EXPENSE_CATEGORIES, SplitType } from '@/features/groups/constants';
 import User, { GroupMember } from '@/models/User';
 import {
   Flex,
@@ -35,12 +35,12 @@ type FormValues = {
   payer: string;
   amount: number;
   description: string;
-  participants: GroupMember[];
+  participants: (GroupMember & { expense: string | number })[];
 };
 
 export default function AddExpenseForm({ currentUser, members }: Props) {
   const isGroupAdmin = members.find(
-    (member) => (member._id = currentUser._id)
+    (member) => member._id === currentUser._id
   )?.isAdmin;
 
   const formMethods = useForm<FormValues>({
@@ -56,19 +56,27 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
     },
   });
 
+  const totalExpenseAmount = formMethods.watch('amount');
+  const participants = formMethods.watch('participants');
+
   const [participantOptions, setParticipantOptions] = useState<GroupMember[]>(
     members.filter((member) => member._id !== currentUser._id)
   );
+  const [splitType, setSplitType] = useState<SplitType | undefined>();
+
+  const onSubmitAddExpense = (data: FormValues) => {
+    console.log(data);
+  };
 
   return (
     <FormProvider {...formMethods}>
-      <VStack paddingTop='50px' minHeight='60lvh'>
-        <HStack
-          as='form'
-          justifyContent='center'
-          alignItems='flex-start'
-          gap='100px'
-        >
+      <VStack
+        as='form'
+        paddingTop='50px'
+        minHeight='60lvh'
+        onSubmit={formMethods.handleSubmit(onSubmitAddExpense)}
+      >
+        <HStack justifyContent='center' alignItems='flex-start' gap='100px'>
           <Flex
             flexDirection='column'
             alignItems='center'
@@ -270,8 +278,15 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                 );
               }}
             </FormField>
-            <SplitTypeSelector />
-            <ExpenseValues participants={formMethods.watch('participants')} />
+            <SplitTypeSelector
+              currentSplitType={splitType}
+              onChangeSplitType={setSplitType}
+            />
+            <ExpenseValues
+              splitType={splitType}
+              totalExpenseAmount={totalExpenseAmount}
+              participants={participants}
+            />
           </Flex>
         </HStack>
         <Spacer />
