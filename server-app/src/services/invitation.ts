@@ -72,7 +72,7 @@ const InvitationService = {
       : await UserService.findByUsername(recipientQuery);
     const groupToInvite = await GroupService.findById(groupId);
 
-    const existingInvitation = await Invitation.find({
+    const existingInvitation = await Invitation.findOne({
       senderId,
       recipientId: recipient._id,
       status: 'pending',

@@ -25,7 +25,7 @@ const invitationSchema = new Schema(
   { timestamps: true }
 );
 
-invitationSchema.index({ senderId: 1, recipientId: 1 }, { unique: true });
+invitationSchema.index({ senderId: 1, recipientId: 1 });
 
 const Invitation = model('Invitation', invitationSchema);
 
