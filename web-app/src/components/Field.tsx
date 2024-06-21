@@ -82,7 +82,7 @@ export const PasswordInput = forwardRef<Omit<InputProps, 'type'>, 'input'>(
   }
 );
 
-type CurrencyInputProps = Omit<
+type NumericInputProps = Omit<
   NumberInputFieldProps,
   'type' | 'min' | 'step' | 'defaultValue'
 > & {
@@ -93,13 +93,12 @@ type CurrencyInputProps = Omit<
   onMouseWheel?: (valueAsString: string, valueAsNumber: number) => void;
 };
 
-export const NumberInput = forwardRef<CurrencyInputProps, 'input'>(
-  function CurrencyInput(
+export const NumericInput = forwardRef<NumericInputProps, 'input'>(
+  function NumericInput(
     { min, step, currency, defaultValue = 0, onMouseWheel, ...props },
     ref
   ) {
     const formContext = useFormContext();
-
     return (
       <NumberInputContainer
         allowMouseWheel
@@ -116,10 +115,12 @@ export const NumberInput = forwardRef<CurrencyInputProps, 'input'>(
         }}
       >
         <NumberInputField ref={ref} {...props} />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
+        {!props.readOnly && (
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        )}
       </NumberInputContainer>
     );
   }

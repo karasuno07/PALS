@@ -20,7 +20,7 @@ export const TABS: Tab[] = [
 export type SplitType = 'Equal Split' | 'Unequal Split' | 'By Lend';
 export const SPLIT_TYPES = ['Equal Split', 'Unequal Split', 'By Lend'] as const;
 
-type ExpenseCategory = {
+export type ExpenseCategory = {
   title: string;
   categories: string[];
 };

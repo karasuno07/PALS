@@ -1,24 +1,22 @@
-import { FormField, NumberInput } from '@/components/Field';
-import { GroupMember } from '@/models/User';
+import { FormField, NumericInput } from '@/components/Field';
+import { SplitType } from '@/features/groups/constants';
 import {
   Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/react';
-import { SplitType } from '../../constants';
+import { useFormContext } from 'react-hook-form';
+import { FormValues } from '.';
 
 type Props = {
   splitType?: SplitType;
-  totalExpenseAmount: number;
-  participants: GroupMember[];
 };
 
-export default function ExpenseValues({
-  splitType,
-  totalExpenseAmount,
-  participants,
-}: Props) {
+export default function ExpenseValues({ splitType }: Props) {
+  const formContext = useFormContext<FormValues>();
+  const participants = formContext.watch('participants');
+
   return (
     <Flex gap={2}>
       {splitType !== undefined &&
@@ -32,8 +30,9 @@ export default function ExpenseValues({
                   isReadOnly={splitType === 'Equal Split'}
                 >
                   <FormLabel>{participant.name}</FormLabel>
-                  <NumberInput
+                  <NumericInput
                     backgroundColor='white'
+                    readOnly={splitType === 'Equal Split'}
                     min={0}
                     step={500}
                     currency='VNĐ'

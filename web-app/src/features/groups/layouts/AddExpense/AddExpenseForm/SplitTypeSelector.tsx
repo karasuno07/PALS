@@ -1,21 +1,15 @@
 import { SPLIT_TYPES, SplitType } from '@/features/groups/constants';
 import { Button, Flex, FormControl, FormLabel } from '@chakra-ui/react';
-import { Dispatch, SetStateAction } from 'react';
-import { useFormContext } from 'react-hook-form';
 
 type Props = {
   currentSplitType: SplitType | undefined;
-  onChangeSplitType: Dispatch<SetStateAction<SplitType | undefined>>;
+  onChangeSplitType: (type: SplitType) => void;
 };
 
 export default function SplitTypeSelector({
   currentSplitType,
   onChangeSplitType,
 }: Props) {
-  const formContext = useFormContext();
-  const participants = formContext.watch('participants');
-  // TODO:
-
   return (
     <FormControl>
       <FormLabel fontWeight='600'>Please select split type:</FormLabel>

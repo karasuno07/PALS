@@ -1,7 +1,6 @@
 'use client';
 
-import { FormField, NumberInput } from '@/components/Field';
-import MultiSelect from '@/components/MultiSelect';
+import { FormField, NumericInput } from '@/components/Field';
 import SubmitButton from '@/components/SubmitButton';
 import { EXPENSE_CATEGORIES, SplitType } from '@/features/groups/constants';
 import User, { GroupMember } from '@/models/User';
@@ -18,24 +17,29 @@ import {
   Textarea,
   VStack,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Select as ReactSelect } from 'chakra-react-select';
+import { useCallback, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import ExpenseValues from './ExpenseValues';
 import SplitTypeSelector from './SplitTypeSelector';
+import { AddExpenseFormValidationSchema } from './formSchema';
 
 type Props = {
   currentUser: User;
   members: GroupMember[];
 };
 
-type FormValues = {
+type Participant = GroupMember & { expense: string | number };
+
+export type FormValues = {
   name: string;
   date: Date | string;
   category: string;
   payer: string;
   amount: number;
   description: string;
-  participants: (GroupMember & { expense: string | number })[];
+  participants: Participant[];
 };
 
 export default function AddExpenseForm({ currentUser, members }: Props) {
@@ -54,15 +58,39 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
       description: '',
       participants: [],
     },
+    resolver: zodResolver(AddExpenseFormValidationSchema),
   });
-
-  const totalExpenseAmount = formMethods.watch('amount');
-  const participants = formMethods.watch('participants');
 
   const [participantOptions, setParticipantOptions] = useState<GroupMember[]>(
     members.filter((member) => member._id !== currentUser._id)
   );
   const [splitType, setSplitType] = useState<SplitType | undefined>();
+
+  const calculateExpenses = useCallback(
+    function (params?: { totalAmount?: number; participants?: Participant[] }) {
+      const totalAmount = params?.totalAmount || formMethods.watch('amount');
+      const participants =
+        params?.participants || formMethods.watch('participants');
+
+      const updatedParticipants = participants.map((participant) => {
+        let expense = 0;
+        if (splitType === 'Equal Split') {
+          expense = totalAmount / participants.length;
+        }
+        return { ...participant, expense };
+      });
+      formMethods.reset({
+        participants: updatedParticipants,
+        amount: totalAmount,
+      });
+    },
+    [formMethods, splitType]
+  );
+
+  const onChangeSplitType = (type: SplitType) => {
+    setSplitType(type);
+    calculateExpenses();
+  };
 
   const onSubmitAddExpense = (data: FormValues) => {
     console.log(data);
@@ -133,18 +161,25 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                     <FormLabel fontWeight='600'>
                       Please select expense category:
                     </FormLabel>
-                    <MultiSelect
-                      isMulti={false}
+                    <ReactSelect
+                      instanceId='category'
                       id='expense-category'
+                      useBasicStyles
                       chakraStyles={{
                         groupHeading(base) {
                           return { ...base, fontSize: '18px' };
                         },
+                        control(base) {
+                          return { ...base, backgroundColor: 'white' };
+                        },
+                        menuList(base) {
+                          return { ...base, paddingY: 0 };
+                        },
                       }}
-                      options={EXPENSE_CATEGORIES.map((group) => {
+                      options={EXPENSE_CATEGORIES.map((option) => {
                         return {
-                          label: group.title,
-                          options: group.categories.map((category) => ({
+                          label: option.title,
+                          options: option.categories.map((category) => ({
                             label: category,
                             value: category,
                           })),
@@ -207,12 +242,19 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                   return (
                     <FormControl isInvalid={hasError} maxWidth='200px'>
                       <FormLabel fontWeight='600'>Amount (VNĐ)</FormLabel>
-                      <NumberInput
+                      <NumericInput
                         min={0}
                         step={1000}
                         currency='VNĐ'
                         backgroundColor='white'
                         {...field}
+                        onChange={(evt) => {
+                          field.onChange(evt);
+                          calculateExpenses();
+                        }}
+                        onMouseWheel={() => {
+                          calculateExpenses();
+                        }}
                       />
                       {hasError && (
                         <FormErrorMessage>
@@ -253,19 +295,43 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                 return (
                   <FormControl isInvalid={hasError}>
                     <FormLabel fontWeight='600'>Participants</FormLabel>
-                    <MultiSelect
+                    <ReactSelect<GroupMember, true>
+                      instanceId='participants'
                       isMulti
                       id='expense-participants'
+                      useBasicStyles
+                      chakraStyles={{
+                        control(base) {
+                          return { ...base, backgroundColor: 'white' };
+                        },
+                        menuList(base) {
+                          return { ...base, paddingY: 0 };
+                        },
+                      }}
                       options={participantOptions}
-                      getOptionLabel={(option: any) => option.name}
-                      getOptionValue={(option: any) => option._id}
+                      getOptionLabel={(option: GroupMember) =>
+                        option.name || ''
+                      }
+                      getOptionValue={(option: GroupMember) => option._id}
                       {...field}
-                      onChange={(evt) => {
-                        const expenseAmount = formMethods.watch('amount');
-                        if (expenseAmount == 0) {
-                          // TODO:
-                        } else {
-                          field.onChange(evt);
+                      onChange={(values) => {
+                        const totalAmount = formMethods.watch('amount');
+                        if (Array.isArray(values)) {
+                          field.onChange(values);
+                          // const updatedParticipants = values.map(
+                          //   (participant) => {
+                          //     let expense = 0;
+                          //     if (splitType === 'Equal Split') {
+                          //       expense = totalAmount / values.length;
+                          //     }
+                          //     return { ...participant, expense };
+                          //   }
+                          // );
+                          // formMethods.reset({
+                          //   participants: updatedParticipants,
+                          //   amount: totalAmount,
+                          // });
+                          calculateExpenses({ participants: values });
                         }
                       }}
                     />
@@ -280,13 +346,9 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
             </FormField>
             <SplitTypeSelector
               currentSplitType={splitType}
-              onChangeSplitType={setSplitType}
+              onChangeSplitType={onChangeSplitType}
             />
-            <ExpenseValues
-              splitType={splitType}
-              totalExpenseAmount={totalExpenseAmount}
-              participants={participants}
-            />
+            <ExpenseValues splitType={splitType} />
           </Flex>
         </HStack>
         <Spacer />
