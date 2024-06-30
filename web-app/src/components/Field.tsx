@@ -88,26 +88,23 @@ type NumericInputProps = Omit<
 > & {
   min?: number;
   step?: number;
-  defaultValue?: number;
   currency: string;
   onMouseWheel?: (valueAsString: string, valueAsNumber: number) => void;
 };
 
 export const NumericInput = forwardRef<NumericInputProps, 'input'>(
-  function NumericInput(
-    { min, step, currency, defaultValue = 0, onMouseWheel, ...props },
-    ref
-  ) {
+  function NumericInput({ min, step, currency, onMouseWheel, ...props }, ref) {
     const formContext = useFormContext();
     return (
       <NumberInputContainer
         allowMouseWheel
         min={min}
         step={step}
-        value={(props.value as string) || 0}
+        value={props.value?.toString()}
         onChange={(valueString, valueNumber) => {
           if (formContext && props.name) {
             formContext.setValue(props.name, valueString);
+            formContext.trigger(props.name);
           }
           if (onMouseWheel) {
             onMouseWheel(valueString, valueNumber);

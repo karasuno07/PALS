@@ -35,11 +35,12 @@ type Participant = GroupMember & { expense: string | number };
 export type FormValues = {
   name: string;
   date: Date | string;
-  category: string;
+  category: { value: string };
   payer: string;
-  amount: number;
+  amount: number | string;
   description: string;
   participants: Participant[];
+  splitType: SplitType | '';
 };
 
 export default function AddExpenseForm({ currentUser, members }: Props) {
@@ -52,11 +53,12 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
     defaultValues: {
       name: '',
       date: '',
-      category: '',
+      category: { value: '' },
       payer: currentUser._id,
-      amount: 0,
+      amount: '0',
       description: '',
       participants: [],
+      splitType: '',
     },
     resolver: zodResolver(AddExpenseFormValidationSchema),
   });
@@ -64,36 +66,53 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
   const [participantOptions, setParticipantOptions] = useState<GroupMember[]>(
     members.filter((member) => member._id !== currentUser._id)
   );
-  const [splitType, setSplitType] = useState<SplitType | undefined>();
 
   const calculateExpenses = useCallback(
-    function (params?: { totalAmount?: number; participants?: Participant[] }) {
+    function (params?: {
+      splitType?: SplitType;
+      totalAmount?: number;
+      participants?: Participant[];
+    }) {
       const totalAmount = params?.totalAmount || formMethods.watch('amount');
       const participants =
         params?.participants || formMethods.watch('participants');
+      const splitType = params?.splitType || formMethods.watch('splitType');
 
       const updatedParticipants = participants.map((participant) => {
-        let expense = 0;
-        if (splitType === 'Equal Split') {
-          expense = totalAmount / participants.length;
+        let expenseAmount = 0;
+        if (splitType) {
+          expenseAmount = Number(totalAmount) / participants.length;
         }
-        return { ...participant, expense };
+        return { ...participant, expense: String(expenseAmount) };
       });
       formMethods.reset({
+        ...formMethods.getValues(),
         participants: updatedParticipants,
         amount: totalAmount,
       });
     },
-    [formMethods, splitType]
+    [formMethods]
   );
 
-  const onChangeSplitType = (type: SplitType) => {
-    setSplitType(type);
-    calculateExpenses();
+  const onChangeSplitType = (splitType: SplitType) => {
+    formMethods.setValue('splitType', splitType);
+    formMethods.trigger('splitType');
+    calculateExpenses({ splitType });
   };
 
   const onSubmitAddExpense = (data: FormValues) => {
-    console.log(data);
+    const expensePayload = {
+      name: data.name,
+      category: data.category.value,
+      amount: Number(data.amount),
+      description: data.description,
+      payer: data.payer,
+      participants: data.participants.map((participant) => ({
+        ...participant,
+        expense: Number(participant.expense),
+      })),
+    };
+    console.log(expensePayload);
   };
 
   return (
@@ -113,7 +132,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
           >
             <FormField name='name'>
               {({ field, fieldState }) => {
-                const hasError = fieldState.isDirty && !!fieldState.error;
+                const hasError = !!fieldState.error;
                 return (
                   <FormControl isInvalid={hasError}>
                     <FormLabel fontWeight='600'>Expense name</FormLabel>
@@ -134,7 +153,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
             </FormField>
             <FormField name='date'>
               {({ field, fieldState }) => {
-                const hasError = fieldState.isDirty && !!fieldState.error;
+                const hasError = !!fieldState.error;
                 return (
                   <FormControl isInvalid={hasError}>
                     <FormLabel fontWeight='600'>Expense date</FormLabel>
@@ -155,7 +174,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
             </FormField>
             <FormField name='category'>
               {({ field, fieldState }) => {
-                const hasError = fieldState.isDirty && !!fieldState.error;
+                const hasError = !!fieldState.error;
                 return (
                   <FormControl isInvalid={hasError} zIndex={2}>
                     <FormLabel fontWeight='600'>
@@ -200,7 +219,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
               <FormField name='payer'>
                 {({ field, fieldState }) => {
                   const { onChange, ...fieldProps } = field;
-                  const hasError = fieldState.isDirty && !!fieldState.error;
+                  const hasError = !!fieldState.error;
                   return (
                     <FormControl isInvalid={hasError} maxWidth='250px'>
                       <FormLabel fontWeight='600'>Payer</FormLabel>
@@ -238,7 +257,8 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
               </FormField>
               <FormField name='amount'>
                 {({ field, fieldState }) => {
-                  const hasError = fieldState.isDirty && !!fieldState.error;
+                  const hasError = !!fieldState.error;
+
                   return (
                     <FormControl isInvalid={hasError} maxWidth='200px'>
                       <FormLabel fontWeight='600'>Amount (VNĐ)</FormLabel>
@@ -290,8 +310,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
           <Flex flexDirection='column' gap={5} maxWidth='470px'>
             <FormField name='participants'>
               {({ field, fieldState }) => {
-                const hasError = fieldState.isDirty && !!fieldState.error;
-
+                const hasError = !!fieldState.error;
                 return (
                   <FormControl isInvalid={hasError}>
                     <FormLabel fontWeight='600'>Participants</FormLabel>
@@ -315,23 +334,11 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                       getOptionValue={(option: GroupMember) => option._id}
                       {...field}
                       onChange={(values) => {
-                        const totalAmount = formMethods.watch('amount');
                         if (Array.isArray(values)) {
                           field.onChange(values);
-                          // const updatedParticipants = values.map(
-                          //   (participant) => {
-                          //     let expense = 0;
-                          //     if (splitType === 'Equal Split') {
-                          //       expense = totalAmount / values.length;
-                          //     }
-                          //     return { ...participant, expense };
-                          //   }
-                          // );
-                          // formMethods.reset({
-                          //   participants: updatedParticipants,
-                          //   amount: totalAmount,
-                          // });
-                          calculateExpenses({ participants: values });
+                          calculateExpenses({
+                            participants: values,
+                          });
                         }
                       }}
                     />
@@ -344,11 +351,8 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                 );
               }}
             </FormField>
-            <SplitTypeSelector
-              currentSplitType={splitType}
-              onChangeSplitType={onChangeSplitType}
-            />
-            <ExpenseValues splitType={splitType} />
+            <SplitTypeSelector onChangeSplitType={onChangeSplitType} />
+            <ExpenseValues />
           </Flex>
         </HStack>
         <Spacer />

@@ -1,5 +1,4 @@
 import { FormField, NumericInput } from '@/components/Field';
-import { SplitType } from '@/features/groups/constants';
 import {
   Flex,
   FormControl,
@@ -9,13 +8,10 @@ import {
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from '.';
 
-type Props = {
-  splitType?: SplitType;
-};
-
-export default function ExpenseValues({ splitType }: Props) {
+export default function ExpenseValues() {
   const formContext = useFormContext<FormValues>();
   const participants = formContext.watch('participants');
+  const splitType = formContext.watch('splitType');
 
   return (
     <Flex gap={2}>
@@ -23,7 +19,7 @@ export default function ExpenseValues({ splitType }: Props) {
         participants.map((participant, idx) => (
           <FormField name={`participants.${idx}.expense`} key={participant._id}>
             {({ field: { value, ...fieldProps }, fieldState }) => {
-              const hasError = fieldState.isDirty && !!fieldState.error;
+              const hasError = !!fieldState.error;
               return (
                 <FormControl
                   isInvalid={hasError}
