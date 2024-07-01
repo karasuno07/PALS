@@ -12,7 +12,6 @@ import {
   HStack,
   Input,
   InputGroup,
-  Select,
   Spacer,
   Textarea,
   VStack,
@@ -36,7 +35,7 @@ export type FormValues = {
   name: string;
   date: Date | string;
   category: { value: string };
-  payer: string;
+  payer: User;
   amount: number | string;
   description: string;
   participants: Participant[];
@@ -54,7 +53,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
       name: '',
       date: '',
       category: { value: '' },
-      payer: currentUser._id,
+      payer: currentUser,
       amount: '0',
       description: '',
       participants: [],
@@ -177,9 +176,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                 const hasError = !!fieldState.error;
                 return (
                   <FormControl isInvalid={hasError} zIndex={2}>
-                    <FormLabel fontWeight='600'>
-                      Please select expense category:
-                    </FormLabel>
+                    <FormLabel fontWeight='600'>Category</FormLabel>
                     <ReactSelect
                       instanceId='category'
                       id='expense-category'
@@ -204,6 +201,7 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                           })),
                         };
                       })}
+                      placeholder='Please select expense category...'
                       {...field}
                     />
                     {hasError && (
@@ -223,29 +221,34 @@ export default function AddExpenseForm({ currentUser, members }: Props) {
                   return (
                     <FormControl isInvalid={hasError} maxWidth='250px'>
                       <FormLabel fontWeight='600'>Payer</FormLabel>
-                      <Select
+                      <ReactSelect<User>
+                        instanceId='payer'
                         id='expense-payer'
-                        backgroundColor='white'
-                        isDisabled={!isGroupAdmin}
-                        onChange={(evt) => {
+                        useBasicStyles
+                        chakraStyles={{
+                          groupHeading(base) {
+                            return { ...base, fontSize: '18px' };
+                          },
+                          control(base) {
+                            return { ...base, backgroundColor: 'white' };
+                          },
+                          menuList(base) {
+                            return { ...base, paddingY: 0 };
+                          },
+                        }}
+                        options={members}
+                        getOptionLabel={(option) => option.name || ''}
+                        getOptionValue={(option) => option._id}
+                        {...fieldProps}
+                        onChange={(data) => {
                           const updatedParticipants = members.filter(
-                            (member) => member._id !== evt.target.value
+                            (member) => member._id !== data?._id
                           );
                           setParticipantOptions(updatedParticipants);
                           formMethods.resetField('participants');
-                          field.onChange(evt);
+                          field.onChange(data);
                         }}
-                        {...fieldProps}
-                      >
-                        {members.map((member) => (
-                          <option
-                            key={`payer-${member._id}`}
-                            value={member._id}
-                          >
-                            {member.name}
-                          </option>
-                        ))}
-                      </Select>
+                      />
                       {hasError && (
                         <FormErrorMessage>
                           {fieldState.error?.message}

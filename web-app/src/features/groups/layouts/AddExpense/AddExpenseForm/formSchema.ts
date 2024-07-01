@@ -13,7 +13,10 @@ export const AddExpenseFormValidationSchema = z
       },
       { invalid_type_error: 'Expense category is required' }
     ),
-    payer: z.string().trim().min(1, 'Payer is required'),
+    payer: z.object({
+      _id: z.string().trim().min(1, 'Payer is required'),
+      name: z.string().trim(),
+    }),
     amount: z
       .string()
       .trim()
